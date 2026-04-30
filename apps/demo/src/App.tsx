@@ -1,5 +1,5 @@
 import { Link, Route, Routes } from "react-router-dom";
-import { RouteXrayOverlay } from "react-router-xray-react";
+import { RouteXrayOverlay } from "../../../packages/react/src/index";
 
 function Page({ title }: { title: string }) {
   return <h2>{title}</h2>;
@@ -19,7 +19,7 @@ export default function App() {
         <Route path="/dashboard" element={<Page title="Dashboard" />} />
         <Route path="/settings" element={<Page title="Settings" />} />
       </Routes>
-      <RouteXrayOverlay input={"/\n/dashboard\n/settings"} />
+      <RouteXrayOverlay />
     </main>
   );
 }
