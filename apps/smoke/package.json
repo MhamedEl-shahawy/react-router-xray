@@ -1,19 +1,17 @@
 {
-  "name": "@apps/demo",
+  "name": "@apps/smoke",
   "private": true,
-  "version": "0.1.9",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.json && vite build",
-    "preview": "vite preview",
-    "analyze": "xray --input \"/,/dashboard,/settings\""
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
-    "react-router-xray": "workspace:*",
     "react-router-xray-react": "workspace:*"
   },
   "devDependencies": {

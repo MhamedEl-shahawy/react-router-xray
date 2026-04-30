@@ -1,5 +1,23 @@
 # react-router-xray-react
 
+## 2.0.8
+
+### Patch Changes
+
+- Improve overlay control reliability with a persistent launcher button after close and an additional keyboard toggle shortcut (Ctrl+Shift+X) alongside Alt+R.
+
+## 2.0.7
+
+### Patch Changes
+
+- Limit overlay pointer-event capture to visible panel controls so it cannot block interactions across the page.
+
+## 2.0.6
+
+### Patch Changes
+
+- Fix overlay controls so close and minimize actions behave reliably. Minimize now collapses and expands panel content, while close fully hides the overlay.
+
 ## 2.0.5
 
 ### Patch Changes

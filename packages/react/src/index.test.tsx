@@ -60,26 +60,32 @@ function renderApp(initial = "/users/42") {
 }
 
 describe("RouteXrayOverlay", () => {
-  it("renders active chain and score", async () => {
+  it("renders active chain and score after opening", async () => {
     renderApp();
-    expect(screen.getAllByTestId("xray-overlay").length).toBeGreaterThan(0);
+    expect(screen.queryByTestId("xray-overlay")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /open route x-ray/i }));
+    await waitFor(() => expect(screen.getByTestId("xray-overlay")).toBeInTheDocument());
     expect(screen.getByText("ACTIVE CHAIN")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText(/72\/100/)).toBeInTheDocument());
   });
 
   it("toggles with Alt+R and closes with Escape", async () => {
     renderApp();
-    expect(screen.getAllByTestId("xray-overlay").length).toBeGreaterThan(0);
-    fireEvent.keyDown(window, { key: "r", altKey: true });
-    await waitFor(() => expect(screen.queryAllByTestId("xray-overlay").length).toBe(0));
-    fireEvent.keyDown(window, { key: "r", altKey: true });
-    await waitFor(() => expect(screen.getAllByTestId("xray-overlay").length).toBeGreaterThan(0));
+    expect(screen.queryByTestId("xray-overlay")).not.toBeInTheDocument();
+    fireEvent.keyDown(window, { code: "KeyR", altKey: true });
+    await waitFor(() => expect(screen.getByTestId("xray-overlay")).toBeInTheDocument());
+    fireEvent.keyDown(window, { code: "KeyR", altKey: true });
+    await waitFor(() => expect(screen.queryByTestId("xray-overlay")).not.toBeInTheDocument());
+    fireEvent.keyDown(window, { code: "KeyR", altKey: true });
+    await waitFor(() => expect(screen.getByTestId("xray-overlay")).toBeInTheDocument());
     fireEvent.keyDown(window, { key: "Escape" });
-    await waitFor(() => expect(screen.queryAllByTestId("xray-overlay").length).toBe(0));
+    await waitFor(() => expect(screen.queryByTestId("xray-overlay")).not.toBeInTheDocument());
   });
 
   it("highlights instrumented DOM node on hover", async () => {
     renderApp();
+    fireEvent.click(screen.getByRole("button", { name: /open route x-ray/i }));
+    await waitFor(() => expect(screen.getByTestId("xray-overlay")).toBeInTheDocument());
     const routeRows = await screen.findAllByText(/\/users\/42/, { selector: ".xray-route-row span" });
     const rowLabel = routeRows[0];
     fireEvent.mouseEnter(rowLabel.closest(".xray-route-row")!);

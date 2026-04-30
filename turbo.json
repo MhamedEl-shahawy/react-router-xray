@@ -21,6 +21,13 @@
         "vite-plugin-react-router-xray#build"
       ]
     },
+    "@apps/smoke#build": {
+      "dependsOn": [
+        "react-router-xray-core#build",
+        "react-router-xray-react#build",
+        "vite-plugin-react-router-xray#build"
+      ]
+    },
     "dev": {
       "dependsOn": ["react-router-xray-core#build"],
       "cache": false

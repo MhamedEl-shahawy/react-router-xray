@@ -1,6 +1,6 @@
 {
   "name": "react-router-xray-react",
-  "version": "2.0.5",
+  "version": "2.0.8",
   "description": "React overlay components for live React Router route diagnostics and DOM highlighting.",
   "license": "MIT",
   "repository": {

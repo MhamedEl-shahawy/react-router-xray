@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useEffect } from "react";
 import { createMemoryRouter, Outlet, RouterProvider } from "react-router-dom";
-import { RouteXrayOverlay, XrayBoundary } from "./index";
+import { RouteXrayOverlay, type RouteXrayOverlayProps, XrayBoundary } from "./index";
 
-function BaseApp() {
+function BaseApp({ overlayProps }: { overlayProps?: RouteXrayOverlayProps }) {
   return (
     <XrayBoundary routeId="root">
       <Outlet />
-      <RouteXrayOverlay />
+      <RouteXrayOverlay {...overlayProps} />
     </XrayBoundary>
   );
 }
@@ -24,12 +24,18 @@ function Detail() {
   return <XrayBoundary routeId="user-detail"><div>User detail page</div></XrayBoundary>;
 }
 
-function AppWithOverlay({ collapsed = false }: { collapsed?: boolean }) {
+function AppWithOverlay({
+  collapsed = false,
+  overlayProps
+}: {
+  collapsed?: boolean;
+  overlayProps?: RouteXrayOverlayProps;
+}) {
   const router = createMemoryRouter(
     [{
       id: "root",
       path: "/",
-      element: <BaseApp />,
+      element: <BaseApp overlayProps={overlayProps} />,
       handle: { xray: { component: "RootLayout", errorBoundary: true } },
       children: [{
         id: "users",
@@ -48,9 +54,10 @@ function AppWithOverlay({ collapsed = false }: { collapsed?: boolean }) {
   );
 
   useEffect(() => {
-    if (collapsed) {
-      window.dispatchEvent(new KeyboardEvent("keydown", { key: "r", altKey: true }));
-    }
+    if (!collapsed) return;
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLButtonElement>('[aria-label="Minimize panel"]')?.click();
+    });
   }, [collapsed]);
 
   return <RouterProvider router={router} />;
@@ -65,19 +72,19 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => <AppWithOverlay />
+  render: () => <AppWithOverlay overlayProps={{ defaultOpen: true }} />
 };
 
 export const LoadingState: Story = {
   name: "loading state",
-  render: () => <AppWithOverlay />
+  render: () => <AppWithOverlay overlayProps={{ defaultOpen: true }} />
 };
 
 export const ErrorState: Story = {
   name: "error state",
-  render: () => <AppWithOverlay />
+  render: () => <AppWithOverlay overlayProps={{ defaultOpen: true }} />
 };
 
 export const Collapsed: Story = {
-  render: () => <AppWithOverlay collapsed />
+  render: () => <AppWithOverlay collapsed overlayProps={{ defaultOpen: true }} />
 };

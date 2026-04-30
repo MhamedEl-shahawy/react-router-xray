@@ -20,7 +20,8 @@ export default defineConfig({
     react(),
     reactRouterXray({
       routes: ["/", "/about", "/settings"],
-      failOnBuild: false
+      failOnBuild: false,
+      startupAnalysis: true
     })
   ]
 });

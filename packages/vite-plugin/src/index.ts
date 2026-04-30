@@ -7,6 +7,8 @@ const RESOLVED_VIRTUAL_ID = "\0virtual:react-router-xray";
 export type ReactRouterXrayPluginOptions = {
   routes?: string | string[];
   failOnBuild?: boolean;
+  /** When true (default), logs analysis after config resolves without blocking the synchronous hook. Set false to skip startup work. */
+  startupAnalysis?: boolean;
 };
 
 function normalizeRoutes(input: string | string[] | undefined): string {
@@ -27,17 +29,34 @@ function normalizeRoutes(input: string | string[] | undefined): string {
 export default function reactRouterXrayPlugin(
   options: string | string[] | ReactRouterXrayPluginOptions = ""
 ): Plugin {
-  const normalized =
+  const opts: ReactRouterXrayPluginOptions =
     typeof options === "string" || Array.isArray(options)
-      ? normalizeRoutes(options)
-      : normalizeRoutes(options.routes);
+      ? { routes: options }
+      : options ?? {};
+
+  const normalized = normalizeRoutes(opts.routes);
+
+  const startupAnalysis =
+    typeof opts.startupAnalysis === "boolean" ? opts.startupAnalysis : true;
 
   return {
     name: "vite-plugin-react-router-xray",
     enforce: "pre",
     configResolved() {
-      const result = analyzeRoutes(normalized);
-      console.info("[react-router-xray] startup analysis", result);
+      if (!startupAnalysis) return;
+      const run = () => {
+        try {
+          const result = analyzeRoutes(normalized);
+          console.info("[react-router-xray] startup analysis", result);
+        } catch (error) {
+          console.warn("[react-router-xray] startup analysis failed", error);
+        }
+      };
+      if (typeof queueMicrotask === "function") {
+        queueMicrotask(run);
+      } else {
+        setTimeout(run, 0);
+      }
     },
     resolveId(id) {
       if (id === VIRTUAL_ID) return RESOLVED_VIRTUAL_ID;
