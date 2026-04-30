@@ -1,5 +1,11 @@
 # react-router-xray-react
 
+## 2.0.4
+
+### Patch Changes
+
+- Move React and React Router DOM to peer dependencies to avoid duplicate runtime copies and invalid hook call errors in consumer apps.
+
 ## 2.0.3
 
 ### Patch Changes

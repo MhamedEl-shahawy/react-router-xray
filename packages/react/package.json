@@ -1,6 +1,6 @@
 {
   "name": "react-router-xray-react",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "React overlay components for live React Router route diagnostics and DOM highlighting.",
   "license": "MIT",
   "repository": {
@@ -43,9 +43,11 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "react-router-xray-core": "workspace:*",
-    "react": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-router-xray-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-router-dom": ">=6 <8"
   },
   "devDependencies": {
     "@storybook/react": "^8.6.14",
