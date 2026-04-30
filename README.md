@@ -102,7 +102,13 @@ import react from '@vitejs/plugin-react'
 import reactRouterXray from 'vite-plugin-react-router-xray'
 
 export default defineConfig({
-  plugins: [react(), reactRouterXray({ failOnBuild: false })]
+  plugins: [
+    react(),
+    reactRouterXray({
+      routes: ["/", "/dashboard", "/settings"],
+      failOnBuild: false
+    })
+  ]
 })
 ```
 

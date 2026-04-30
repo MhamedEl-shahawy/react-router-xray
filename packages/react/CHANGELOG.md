@@ -1,5 +1,18 @@
 # react-router-xray-react
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - react-router-xray-core@2.0.2
+
+## 2.0.2
+
+### Patch Changes
+
+- Fix React package entrypoint exports to resolve built files under dist/src for npm consumers.
+
 ## 2.0.1
 
 ### Patch Changes

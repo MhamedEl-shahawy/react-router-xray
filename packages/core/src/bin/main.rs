@@ -99,8 +99,9 @@ enum FailOnLevel {
 #[cfg(feature = "cli")]
 #[derive(Debug, Clone, serde::Deserialize, Default)]
 #[serde(default)]
+#[serde(rename_all = "camelCase")]
 struct XrayConfig {
-    routerFile: Option<String>,
+    router_file: Option<String>,
     rules: RuleConfig,
     thresholds: ThresholdConfig,
 }
@@ -108,20 +109,22 @@ struct XrayConfig {
 #[cfg(feature = "cli")]
 #[derive(Debug, Clone, serde::Deserialize, Default)]
 #[serde(default)]
+#[serde(rename_all = "camelCase")]
 struct RuleConfig {
-    missingErrorBoundary: Option<serde_json::Value>,
-    missingLoader: Option<serde_json::Value>,
-    deepNesting: Option<serde_json::Value>,
-    noLazyLoading: Option<serde_json::Value>,
-    duplicatePath: Option<serde_json::Value>,
-    ambiguousWildcard: Option<serde_json::Value>,
+    missing_error_boundary: Option<serde_json::Value>,
+    missing_loader: Option<serde_json::Value>,
+    deep_nesting: Option<serde_json::Value>,
+    no_lazy_loading: Option<serde_json::Value>,
+    duplicate_path: Option<serde_json::Value>,
+    ambiguous_wildcard: Option<serde_json::Value>,
 }
 
 #[cfg(feature = "cli")]
 #[derive(Debug, Clone, serde::Deserialize, Default)]
 #[serde(default)]
+#[serde(rename_all = "camelCase")]
 struct ThresholdConfig {
-    maxComplexityScore: Option<f32>,
+    max_complexity_score: Option<f32>,
 }
 
 #[cfg(feature = "cli")]
@@ -259,7 +262,7 @@ fn detect_router_file(
         if cfg_file.exists() {
             let data = fs::read_to_string(cfg_file)?;
             let cfg: XrayConfig = serde_json::from_str(&data).unwrap_or_default();
-            if let Some(router) = cfg.routerFile {
+            if let Some(router) = cfg.router_file {
                 return Ok(PathBuf::from(router));
             }
         }
@@ -267,7 +270,7 @@ fn detect_router_file(
     if Path::new("xray.config.json").exists() {
         let data = fs::read_to_string("xray.config.json")?;
         let cfg: XrayConfig = serde_json::from_str(&data).unwrap_or_default();
-        if let Some(router) = cfg.routerFile {
+        if let Some(router) = cfg.router_file {
             return Ok(PathBuf::from(router));
         }
     }
@@ -338,34 +341,62 @@ fn emit_routes(tree: &ParsedRouteTree, report: &AnalysisReport, format: RoutesFo
 
 #[cfg(feature = "cli")]
 fn terminal_report(tree: &ParsedRouteTree, report: &AnalysisReport, path: &Path, no_color: bool) -> String {
+    let error_count = report.issues.iter().filter(|issue| is_error_issue(issue)).count();
+    let warning_count = report.issues.len().saturating_sub(error_count);
+    let score = report.complexity_score.round() as i32;
+    let score_mark = if report.complexity_score > 60.0 { "⚠" } else { "✓" };
+    let score_display = if no_color {
+        format!("{score}/100 {score_mark}")
+    } else if report.complexity_score > 60.0 {
+        format!("{} {score_mark}", format!("{score}/100").yellow().bold())
+    } else {
+        format!("{} {score_mark}", format!("{score}/100").green().bold())
+    };
+
     let header = format!(
-        "Project: {}    Routes: {}    Score: {}/100 {}",
+        "Project: {}    Routes: {}    Score: {}    Errors: {}    Warnings: {}",
         path.parent()
             .and_then(|p| p.file_name())
             .and_then(|n| n.to_str())
             .unwrap_or("app"),
         report.route_count,
-        report.complexity_score.round() as i32,
-        if report.complexity_score > 60.0 { "⚠" } else { "✓" }
+        score_display,
+        error_count,
+        warning_count
     );
 
     #[derive(Tabled)]
     struct Row {
         path: String,
+        flags: String,
+        status: String,
         depth: usize,
-        lazy: bool,
-        loader: bool,
-        error_boundary: bool,
     }
     let rows = report
         .routes_flat
         .iter()
         .map(|r| Row {
             path: r.full_path.clone(),
+            flags: [
+                if r.is_lazy { Some("lazy") } else { None },
+                if r.has_loader { Some("loader") } else { None },
+                if r.has_error_boundary {
+                    Some("error-boundary")
+                } else {
+                    None
+                },
+            ]
+            .iter()
+            .flatten()
+            .copied()
+            .collect::<Vec<_>>()
+            .join(", "),
+            status: if r.has_error_boundary {
+                "ok".to_owned()
+            } else {
+                "missing ErrorBoundary".to_owned()
+            },
             depth: r.depth,
-            lazy: r.is_lazy,
-            loader: r.has_loader,
-            error_boundary: r.has_error_boundary,
         })
         .collect::<Vec<_>>();
 
@@ -395,12 +426,12 @@ fn terminal_report(tree: &ParsedRouteTree, report: &AnalysisReport, path: &Path,
     }
 
     format!(
-        "┌─ react-router-xray ───────────────────────────────────────┐\n│  {header}\n└───────────────────────────────────────────────────────────┘\n\nRoute Tree\n──────────\n{}\n\nRoutes\n──────\n{}\n\nIssues ({})\n──────────\n{}\n\nComplexity Score: {}/100 {}",
+        "┌─ react-router-xray ───────────────────────────────────────────────────────────┐\n│  {header}\n└───────────────────────────────────────────────────────────────────────────────┘\n\nRoute Tree\n──────────\n{}\n\nRoutes\n──────\n{}\n\nIssues ({})\n──────────\n{}\n\nComplexity Score: {}/100 {}",
         tree_lines.join("\n"),
         table,
         report.issues.len(),
         issues_render,
-        report.complexity_score.round() as i32,
+        score,
         if report.complexity_score > 60.0 {
             "⚠ Above recommended threshold (60)"
         } else {

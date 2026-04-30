@@ -1,5 +1,11 @@
 # react-router-xray-core
 
+## 2.0.2
+
+### Patch Changes
+
+- Normalize Vite plugin route input from arrays and newline strings, refresh docs/examples to the tested options format, and improve CLI terminal report presentation.
+
 ## 2.0.1
 
 ### Patch Changes

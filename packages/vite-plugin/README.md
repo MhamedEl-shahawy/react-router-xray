@@ -16,9 +16,17 @@ import react from "@vitejs/plugin-react";
 import reactRouterXray from "vite-plugin-react-router-xray";
 
 export default defineConfig({
-  plugins: [react(), reactRouterXray({ failOnBuild: false })]
+  plugins: [
+    react(),
+    reactRouterXray({
+      routes: ["/", "/about", "/settings"],
+      failOnBuild: false
+    })
+  ]
 });
 ```
+
+The plugin accepts routes as an array or newline-delimited string and normalizes input before analysis.
 
 ## Virtual module
 

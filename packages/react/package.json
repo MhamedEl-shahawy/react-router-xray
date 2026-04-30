@@ -1,6 +1,6 @@
 {
   "name": "react-router-xray-react",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "React overlay components for live React Router route diagnostics and DOM highlighting.",
   "license": "MIT",
   "repository": {
@@ -28,12 +28,12 @@
     "dist",
     "README.md"
   ],
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
     }
   },
   "scripts": {
