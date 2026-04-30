@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "declaration": true,
-    "emitDeclarationOnly": true
+    "declaration": true
   },
   "include": ["index.ts", "wasm.ts"]
 }

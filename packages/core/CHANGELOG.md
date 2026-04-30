@@ -1,5 +1,11 @@
 # react-router-xray-core
 
+## 2.0.1
+
+### Patch Changes
+
+- Fix core package exports to point to real JavaScript files in dist so downstream consumers can resolve module entrypoints correctly.
+
 ## 2.0.0
 
 ### Major Changes
