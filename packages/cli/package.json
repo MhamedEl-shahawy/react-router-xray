@@ -7,7 +7,7 @@
     "xray": "./scripts/run.js"
   },
   "scripts": {
-    "build": "napi build --platform --bin xray --manifest-path ../core/Cargo.toml --features cli",
+    "build": "napi build --platform --bin xray --cargo-cwd ../core --features cli",
     "dev": "node ./scripts/run.js --help",
     "test": "node ./scripts/run.js --help"
   },

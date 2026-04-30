@@ -2,8 +2,20 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "@react-router-xray/core#build"],
+      "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**", "target/**", "npm/**"]
+    },
+    "react-router-xray#build": {
+      "dependsOn": ["@react-router-xray/core#build"]
+    },
+    "vite-plugin-react-router-xray#build": {
+      "dependsOn": ["@react-router-xray/core#build"]
+    },
+    "@react-router-xray/react#build": {
+      "dependsOn": ["@react-router-xray/core#build"]
+    },
+    "@apps/demo#build": {
+      "dependsOn": ["@react-router-xray/core#build"]
     },
     "dev": {
       "dependsOn": ["@react-router-xray/core#build"],

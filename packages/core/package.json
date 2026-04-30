@@ -20,7 +20,7 @@
   "scripts": {
     "build": "pnpm run build:ts && pnpm run build:napi && pnpm run build:wasm",
     "build:ts": "tsc -p tsconfig.json",
-    "build:napi": "napi build --platform --manifest-path ./Cargo.toml --features napi",
+    "build:napi": "napi build --platform --features napi",
     "build:wasm": "wasm-pack build --target web --out-dir ../../dist/wasm ./ -- --features wasm",
     "test": "cargo test --features cli,wasm,napi"
   },
