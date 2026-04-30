@@ -43,7 +43,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@react-router-xray/core": "workspace:*"
+    "react-router-xray-core": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

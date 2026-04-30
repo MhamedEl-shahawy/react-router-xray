@@ -6,23 +6,23 @@
       "outputs": ["dist/**", "build/**", "target/**", "npm/**"]
     },
     "react-router-xray#build": {
-      "dependsOn": ["@react-router-xray/core#build"]
+      "dependsOn": ["react-router-xray-core#build"]
     },
     "vite-plugin-react-router-xray#build": {
-      "dependsOn": ["@react-router-xray/core#build"]
+      "dependsOn": ["react-router-xray-core#build"]
     },
-    "@react-router-xray/react#build": {
-      "dependsOn": ["@react-router-xray/core#build"]
+    "react-router-xray-react#build": {
+      "dependsOn": ["react-router-xray-core#build"]
     },
     "@apps/demo#build": {
       "dependsOn": [
-        "@react-router-xray/core#build",
-        "@react-router-xray/react#build",
+        "react-router-xray-core#build",
+        "react-router-xray-react#build",
         "vite-plugin-react-router-xray#build"
       ]
     },
     "dev": {
-      "dependsOn": ["@react-router-xray/core#build"],
+      "dependsOn": ["react-router-xray-core#build"],
       "cache": false
     },
     "test": {

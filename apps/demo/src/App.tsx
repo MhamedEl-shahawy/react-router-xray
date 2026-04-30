@@ -1,5 +1,5 @@
 import { Link, Route, Routes } from "react-router-dom";
-import { RouteXrayOverlay } from "@react-router-xray/react";
+import { RouteXrayOverlay } from "react-router-xray-react";
 
 function Page({ title }: { title: string }) {
   return <h2>{title}</h2>;

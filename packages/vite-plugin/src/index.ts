@@ -1,5 +1,5 @@
 import type { Plugin } from "vite";
-import { analyzeRoutes } from "@react-router-xray/core";
+import { analyzeRoutes } from "react-router-xray-core";
 
 const VIRTUAL_ID = "virtual:react-router-xray";
 const RESOLVED_VIRTUAL_ID = "\0virtual:react-router-xray";

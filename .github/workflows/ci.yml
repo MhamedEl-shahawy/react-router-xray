@@ -36,7 +36,7 @@ jobs:
         run: cargo test --workspace
 
       - name: TypeScript build
-        run: pnpm turbo run build --filter='!@react-router-xray/core'
+        run: pnpm turbo run build --filter='!react-router-xray-core'
 
       - name: Build CLI binary
         run: cargo build -p react-router-xray-core --features cli

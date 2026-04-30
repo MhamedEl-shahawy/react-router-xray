@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Link, Route, Routes } from "react-router-dom";
-import { RouteXrayOverlay } from "@react-router-xray/react";
+import { RouteXrayOverlay } from "react-router-xray-react";
 function Page({ title }) {
     return _jsx("h2", { children: title });
 }

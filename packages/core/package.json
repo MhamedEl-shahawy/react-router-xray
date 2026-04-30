@@ -1,5 +1,5 @@
 {
-  "name": "@react-router-xray/core",
+  "name": "react-router-xray-core",
   "version": "1.0.0",
   "description": "Rust and TypeScript core analyzer for React Router route inspection and matching.",
   "license": "MIT",

@@ -1,4 +1,4 @@
-import { analyzeRoutes, init, parsePattern } from "@react-router-xray/core/wasm";
+import { analyzeRoutes, init, parsePattern } from "react-router-xray-core/wasm";
 import {
   Fragment,
   type PropsWithChildren,

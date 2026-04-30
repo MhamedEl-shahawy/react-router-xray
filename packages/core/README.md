@@ -1,4 +1,4 @@
-# @react-router-xray/core
+# react-router-xray-core
 
 Feature-gated Rust core for `react-router-xray`.
 

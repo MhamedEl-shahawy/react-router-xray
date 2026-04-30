@@ -3,7 +3,7 @@ import { createMemoryRouter, Outlet, RouterProvider } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { RouteXrayOverlay, XrayBoundary } from "./index";
 
-vi.mock("@react-router-xray/core/wasm", () => ({
+vi.mock("react-router-xray-core/wasm", () => ({
   init: vi.fn(async () => undefined),
   analyzeRoutes: vi.fn(async () => ({ score: 72, routes: ["/", "/users", "/users/:id"] })),
   parsePattern: vi.fn(async (pattern: string) => ({
