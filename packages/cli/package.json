@@ -1,15 +1,41 @@
 {
   "name": "react-router-xray",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "CLI for static analysis and reporting of React Router route trees.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MhamedEl-shahawy/react-router-xray.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/MhamedEl-shahawy/react-router-xray#readme",
+  "bugs": {
+    "url": "https://github.com/MhamedEl-shahawy/react-router-xray/issues"
+  },
+  "keywords": [
+    "react-router",
+    "cli",
+    "routing",
+    "analysis",
+    "ci"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
+  "files": [
+    "scripts",
+    "README.md"
+  ],
   "bin": {
     "xray": "./scripts/run.js"
   },
   "scripts": {
     "build": "napi build --platform --bin xray --cargo-cwd ../core --features cli",
     "dev": "node ./scripts/run.js --help",
-    "test": "node ./scripts/run.js --help"
+    "test": "node ./scripts/run.js --help",
+    "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.18.4",

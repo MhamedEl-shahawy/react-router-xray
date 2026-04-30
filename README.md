@@ -2,7 +2,7 @@
 > X-ray vision for your React Router app — CLI analysis, Vite plugin, live DOM overlay. Rust-powered.
 
 [![npm version](https://img.shields.io/npm/v/react-router-xray.svg)](https://www.npmjs.com/package/react-router-xray)
-[![CI](https://img.shields.io/github/actions/workflow/status/your-org/react-router-xray/ci.yml?branch=main)](https://github.com/your-org/react-router-xray/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/MhamedEl-shahawy/react-router-xray/ci.yml?branch=main)](https://github.com/MhamedEl-shahawy/react-router-xray/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/react-router-xray)](https://bundlephobia.com/package/react-router-xray)
 
@@ -170,7 +170,7 @@ Native CI mode and the packaged GitHub Action are not yet released, but the targ
 In monorepos, this planned check will run per package by passing package-specific router entry files through config overrides. Repositories with multiple apps will be able to enforce independent thresholds while still using the same action interface.
 
 ```yaml
-- uses: your-org/react-router-xray@v1
+- uses: MhamedEl-shahawy/react-router-xray@v1
   with:
     fail-on: error
     min-score: 80

@@ -1,8 +1,33 @@
 {
   "name": "vite-plugin-react-router-xray",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Vite plugin for React Router analysis, virtual manifests, and dev instrumentation.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MhamedEl-shahawy/react-router-xray.git",
+    "directory": "packages/vite-plugin"
+  },
+  "homepage": "https://github.com/MhamedEl-shahawy/react-router-xray#readme",
+  "bugs": {
+    "url": "https://github.com/MhamedEl-shahawy/react-router-xray/issues"
+  },
+  "keywords": [
+    "vite",
+    "react-router",
+    "plugin",
+    "routing",
+    "analysis"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -14,7 +39,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@react-router-xray/core": "workspace:*"

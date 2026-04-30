@@ -1,8 +1,33 @@
 {
   "name": "@react-router-xray/core",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Rust and TypeScript core analyzer for React Router route inspection and matching.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MhamedEl-shahawy/react-router-xray.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/MhamedEl-shahawy/react-router-xray#readme",
+  "bugs": {
+    "url": "https://github.com/MhamedEl-shahawy/react-router-xray/issues"
+  },
+  "keywords": [
+    "react-router",
+    "wasm",
+    "rust",
+    "analysis",
+    "router"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,7 +47,8 @@
     "build:ts": "tsc -p tsconfig.json",
     "build:napi": "napi build --platform --features napi",
     "build:wasm": "wasm-pack build --target web --out-dir ../../dist/wasm ./ -- --features wasm",
-    "test": "cargo test --features cli,wasm,napi"
+    "test": "cargo test --features cli,wasm,napi",
+    "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.18.4",
