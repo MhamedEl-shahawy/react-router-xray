@@ -8,8 +8,7 @@ import {
   useLocation,
   useMatches
 } from "react-router-dom";
-
-type WasmModule = typeof import("react-router-xray-core/wasm");
+import * as wasm from "react-router-xray-core/wasm";
 
 type OverlayMatch = {
   id: string;
@@ -35,14 +34,11 @@ export type RouteXrayOverlayProps = {
 let styleInjected = false;
 const XRAY_STYLE_ID = "route-xray-style";
 
-let wasmReadyPromise: Promise<WasmModule> | null = null;
+let wasmInitPromise: Promise<void> | null = null;
 
-async function getWasm(): Promise<WasmModule> {
-  wasmReadyPromise ??= import("react-router-xray-core/wasm").then(async (mod) => {
-    await mod.init();
-    return mod;
-  });
-  return wasmReadyPromise;
+async function ensureWasm(): Promise<void> {
+  wasmInitPromise ??= wasm.init();
+  await wasmInitPromise;
 }
 
 function injectStyles() {
@@ -125,7 +121,7 @@ export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXray
     const routeLines = matches.map((match) => (match.pathname || "/").trim()).join("\n");
     (async () => {
       try {
-        const wasm = await getWasm();
+        await ensureWasm();
         const result = await wasm.analyzeRoutes(routeLines);
         if (cancelled) return;
         setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
@@ -219,7 +215,7 @@ export const RouteXrayOverlay =
         let cancelled = false;
         (async () => {
           try {
-            const wasm = await getWasm();
+            await ensureWasm();
             const entries = await Promise.all(
               matches.map(async (match) => {
                 const parsed = await wasm.parsePattern(getMatchPath(match));

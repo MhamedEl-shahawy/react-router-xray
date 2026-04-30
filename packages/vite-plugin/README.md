@@ -27,7 +27,7 @@ export default defineConfig({
 });
 ```
 
-The plugin accepts routes as an array or newline-delimited string and normalizes input before analysis.
+The plugin accepts routes as an array or newline-delimited string and normalizes input before analysis. Startup logging runs in a microtask after Vite resolves config so the dev server can finish its synchronous startup path first. Set `startupAnalysis: false` to skip that work entirely.
 
 ## Virtual module
 

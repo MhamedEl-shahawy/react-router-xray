@@ -27,6 +27,20 @@ The overlay renders only in development (it returns `null` in production builds)
 
 The UI sits in a full-viewport root with `pointer-events: none`; only the launcher, panel chrome, and route rows capture clicks so the underlying app stays usable.
 
+To keep devtools out of the main chunk until needed, lazy-load the package:
+
+```tsx
+import { lazy, Suspense } from "react";
+
+const RouteXrayOverlay = lazy(() =>
+  import("react-router-xray-react").then((m) => ({ default: m.RouteXrayOverlay }))
+);
+
+<Suspense fallback={null}>
+  <RouteXrayOverlay />
+</Suspense>
+```
+
 ## Exports
 
 - `RouteXrayOverlay`
