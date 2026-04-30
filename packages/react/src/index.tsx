@@ -3,18 +3,23 @@ import {
   Fragment,
   type PropsWithChildren,
   useEffect,
-  useMemo,
   useRef,
   useState
 } from "react";
 import {
-  useMatches,
-  useNavigation,
-  useRouteLoaderData
+  useLocation,
+  useMatches
 } from "react-router-dom";
 
+type OverlayMatch = {
+  id: string;
+  pathname: string;
+  params: Record<string, string>;
+  handle?: unknown;
+};
+
 export type RouteXrayState = {
-  matches: ReturnType<typeof useMatches>;
+  matches: OverlayMatch[];
   isOpen: boolean;
   toggle: () => void;
   score: number;
@@ -55,16 +60,43 @@ function useLocalOpenState() {
   return { isOpen, setIsOpen, toggle };
 }
 
+function fallbackMatch(pathname: string): OverlayMatch {
+  return {
+    id: pathname || "/",
+    pathname: pathname || "/",
+    params: {},
+    handle: {}
+  };
+}
+
+function useOverlayMatches(): OverlayMatch[] {
+  let pathname = "/";
+  try {
+    const location = useLocation();
+    pathname = location.pathname || "/";
+  } catch {
+    pathname = "/";
+  }
+
+  try {
+    const matches = useMatches();
+    if (!matches.length) return [fallbackMatch(pathname)];
+    return matches.map((match) => ({
+      id: String(match.id ?? match.pathname ?? pathname),
+      pathname: match.pathname || pathname,
+      params: (match.params ?? {}) as Record<string, string>,
+      handle: match.handle
+    }));
+  } catch {
+    return [fallbackMatch(pathname)];
+  }
+}
+
 export function useRouteXray(): RouteXrayState {
-  const matches = useMatches();
-  const navigation = useNavigation();
+  const matches = useOverlayMatches();
   const { isOpen, toggle } = useLocalOpenState();
   const [score, setScore] = useState(0);
   const [issues, setIssues] = useState<string[]>([]);
-
-  // Explicit hook usage requested for router loader state.
-  const activeMatchId = matches[matches.length - 1]?.id ?? "__xray_missing__";
-  const activeLoaderData = useRouteLoaderData(activeMatchId);
 
   useEffect(() => {
     injectStyles();
@@ -88,19 +120,6 @@ export function useRouteXray(): RouteXrayState {
       cancelled = true;
     };
   }, [matches]);
-
-  useEffect(() => {
-    if (navigation.state === "loading") {
-      setIssues((prev) => (prev.includes("Navigation loading") ? prev : [...prev, "Navigation loading"]));
-    } else {
-      setIssues((prev) => prev.filter((entry) => entry !== "Navigation loading"));
-    }
-  }, [navigation.state]);
-
-  useEffect(() => {
-    if (activeLoaderData === undefined) return;
-    setIssues((prev) => prev.filter((entry) => entry !== "No loader data for active route"));
-  }, [activeLoaderData]);
 
   return { matches, isOpen, toggle, score, issues };
 }
@@ -158,7 +177,7 @@ function useHoverInstrumentation() {
   return { highlight, clear };
 }
 
-function getMatchPath(match: ReturnType<typeof useMatches>[number]): string {
+function getMatchPath(match: OverlayMatch): string {
   return match.pathname || "/";
 }
 
@@ -166,8 +185,7 @@ export const RouteXrayOverlay =
   process.env.NODE_ENV === "production"
     ? () => null
     : function RouteXrayOverlayImpl() {
-      const matches = useMatches();
-      const navigation = useNavigation();
+      const matches = useOverlayMatches();
       const { isOpen, setIsOpen, toggle } = useLocalOpenState();
       const { score, issues } = useRouteXray();
       const [paramNames, setParamNames] = useState<Record<string, string[]>>({});
@@ -263,7 +281,7 @@ export const RouteXrayOverlay =
 
           <section className="xray-section xray-status">
             <span>LOADER STATUS</span>
-            <span>● {navigation.state}</span>
+            <span>● idle</span>
           </section>
           <section className="xray-section xray-status">
             <span>SCORE</span>

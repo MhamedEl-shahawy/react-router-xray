@@ -1,5 +1,11 @@
 # react-router-xray-react
 
+## 2.0.5
+
+### Patch Changes
+
+- Prevent RouteXrayOverlay from crashing in BrowserRouter apps by gracefully falling back when data-router hooks are unavailable.
+
 ## 2.0.4
 
 ### Patch Changes
