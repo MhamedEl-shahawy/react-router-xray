@@ -53,7 +53,7 @@ Install the CLI and Vite plugin packages as development dependencies in your app
 Installation is scoped to development because the runtime overlay is intended for diagnostics and is stripped from production paths. The CLI can still be executed in CI containers or local scripts after standard dependency installation.
 
 ```bash
-npm install -D react-router-xray vite-plugin-react-router-xray
+npm install -D react-router-xray react-router-xray-react vite-plugin-react-router-xray
 ```
 
 Pre-built Rust binaries are published for Linux, macOS, and Windows, so a Rust toolchain is not required on consumer projects.
@@ -124,7 +124,7 @@ Mount the overlay adjacent to your router provider so it can observe route match
 
 ```tsx
 import { RouterProvider } from 'react-router-dom'
-import { RouteXrayOverlay } from 'react-router-xray/react'
+import { RouteXrayOverlay } from 'react-router-xray-react'
 
 <RouterProvider router={router} />
 <RouteXrayOverlay />   // toggle with Alt+R
