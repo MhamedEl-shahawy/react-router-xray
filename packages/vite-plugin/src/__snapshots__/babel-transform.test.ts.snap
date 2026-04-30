@@ -1,0 +1,1780 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`xray babel transform > snapshot: arrow function AST 1`] = `
+Node {
+  "comments": [],
+  "end": 197,
+  "errors": [],
+  "loc": SourceLocation {
+    "end": Position {
+      "column": 26,
+      "index": 197,
+      "line": 3,
+    },
+    "filename": undefined,
+    "identifierName": undefined,
+    "start": Position {
+      "column": 0,
+      "index": 0,
+      "line": 1,
+    },
+  },
+  "program": Node {
+    "body": [
+      Node {
+        "attributes": [],
+        "end": 55,
+        "importKind": "value",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 55,
+            "index": 55,
+            "line": 1,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 0,
+            "line": 1,
+          },
+        },
+        "source": Node {
+          "end": 54,
+          "extra": {
+            "raw": ""react-router-xray/react"",
+            "rawValue": "react-router-xray/react",
+          },
+          "loc": SourceLocation {
+            "end": Position {
+              "column": 54,
+              "index": 54,
+              "line": 1,
+            },
+            "filename": undefined,
+            "identifierName": undefined,
+            "start": Position {
+              "column": 29,
+              "index": 29,
+              "line": 1,
+            },
+          },
+          "start": 29,
+          "type": "StringLiteral",
+          "value": "react-router-xray/react",
+        },
+        "specifiers": [
+          Node {
+            "end": 21,
+            "importKind": "value",
+            "imported": Node {
+              "end": 21,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 21,
+                  "index": 21,
+                  "line": 1,
+                },
+                "filename": undefined,
+                "identifierName": "XrayBoundary",
+                "start": Position {
+                  "column": 9,
+                  "index": 9,
+                  "line": 1,
+                },
+              },
+              "name": "XrayBoundary",
+              "start": 9,
+              "type": "Identifier",
+            },
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 21,
+                "index": 21,
+                "line": 1,
+              },
+              "filename": undefined,
+              "identifierName": undefined,
+              "start": Position {
+                "column": 9,
+                "index": 9,
+                "line": 1,
+              },
+            },
+            "local": Node {
+              "end": 21,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 21,
+                  "index": 21,
+                  "line": 1,
+                },
+                "filename": undefined,
+                "identifierName": "XrayBoundary",
+                "start": Position {
+                  "column": 9,
+                  "index": 9,
+                  "line": 1,
+                },
+              },
+              "name": "XrayBoundary",
+              "range": undefined,
+              "start": 9,
+              "type": "Identifier",
+            },
+            "start": 9,
+            "type": "ImportSpecifier",
+          },
+        ],
+        "start": 0,
+        "type": "ImportDeclaration",
+      },
+      Node {
+        "declarations": [
+          Node {
+            "end": 169,
+            "id": Node {
+              "end": 72,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 16,
+                  "index": 72,
+                  "line": 2,
+                },
+                "filename": undefined,
+                "identifierName": "UserDetail",
+                "start": Position {
+                  "column": 6,
+                  "index": 62,
+                  "line": 2,
+                },
+              },
+              "name": "UserDetail",
+              "start": 62,
+              "type": "Identifier",
+            },
+            "init": Node {
+              "async": false,
+              "body": Node {
+                "children": [
+                  Node {
+                    "end": 154,
+                    "expression": Node {
+                      "children": [],
+                      "closingElement": null,
+                      "end": 153,
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 97,
+                          "index": 153,
+                          "line": 2,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 90,
+                          "index": 146,
+                          "line": 2,
+                        },
+                      },
+                      "openingElement": Node {
+                        "attributes": [],
+                        "end": 153,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 97,
+                            "index": 153,
+                            "line": 2,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 90,
+                            "index": 146,
+                            "line": 2,
+                          },
+                        },
+                        "name": Node {
+                          "end": 150,
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 94,
+                              "index": 150,
+                              "line": 2,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 91,
+                              "index": 147,
+                              "line": 2,
+                            },
+                          },
+                          "name": "div",
+                          "start": 147,
+                          "type": "JSXIdentifier",
+                        },
+                        "selfClosing": true,
+                        "start": 146,
+                        "type": "JSXOpeningElement",
+                      },
+                      "start": 146,
+                      "type": "JSXElement",
+                    },
+                    "loc": SourceLocation {
+                      "end": Position {
+                        "column": 98,
+                        "index": 154,
+                        "line": 2,
+                      },
+                      "filename": undefined,
+                      "identifierName": undefined,
+                      "start": Position {
+                        "column": 89,
+                        "index": 145,
+                        "line": 2,
+                      },
+                    },
+                    "start": 145,
+                    "type": "JSXExpressionContainer",
+                  },
+                ],
+                "closingElement": Node {
+                  "end": 169,
+                  "loc": SourceLocation {
+                    "end": Position {
+                      "column": 113,
+                      "index": 169,
+                      "line": 2,
+                    },
+                    "filename": undefined,
+                    "identifierName": undefined,
+                    "start": Position {
+                      "column": 98,
+                      "index": 154,
+                      "line": 2,
+                    },
+                  },
+                  "name": Node {
+                    "end": 168,
+                    "loc": SourceLocation {
+                      "end": Position {
+                        "column": 112,
+                        "index": 168,
+                        "line": 2,
+                      },
+                      "filename": undefined,
+                      "identifierName": undefined,
+                      "start": Position {
+                        "column": 100,
+                        "index": 156,
+                        "line": 2,
+                      },
+                    },
+                    "name": "XrayBoundary",
+                    "start": 156,
+                    "type": "JSXIdentifier",
+                  },
+                  "start": 154,
+                  "type": "JSXClosingElement",
+                },
+                "end": 169,
+                "loc": SourceLocation {
+                  "end": Position {
+                    "column": 113,
+                    "index": 169,
+                    "line": 2,
+                  },
+                  "filename": undefined,
+                  "identifierName": undefined,
+                  "start": Position {
+                    "column": 25,
+                    "index": 81,
+                    "line": 2,
+                  },
+                },
+                "openingElement": Node {
+                  "attributes": [
+                    Node {
+                      "end": 117,
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 61,
+                          "index": 117,
+                          "line": 2,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 39,
+                          "index": 95,
+                          "line": 2,
+                        },
+                      },
+                      "name": Node {
+                        "end": 102,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 46,
+                            "index": 102,
+                            "line": 2,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 39,
+                            "index": 95,
+                            "line": 2,
+                          },
+                        },
+                        "name": "routeId",
+                        "start": 95,
+                        "type": "JSXIdentifier",
+                      },
+                      "start": 95,
+                      "type": "JSXAttribute",
+                      "value": Node {
+                        "end": 117,
+                        "extra": {
+                          "raw": ""users-userid"",
+                          "rawValue": "users-userid",
+                        },
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 61,
+                            "index": 117,
+                            "line": 2,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 47,
+                            "index": 103,
+                            "line": 2,
+                          },
+                        },
+                        "start": 103,
+                        "type": "StringLiteral",
+                        "value": "users-userid",
+                      },
+                    },
+                    Node {
+                      "end": 144,
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 88,
+                          "index": 144,
+                          "line": 2,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 62,
+                          "index": 118,
+                          "line": 2,
+                        },
+                      },
+                      "name": Node {
+                        "end": 127,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 71,
+                            "index": 127,
+                            "line": 2,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 62,
+                            "index": 118,
+                            "line": 2,
+                          },
+                        },
+                        "name": "routePath",
+                        "start": 118,
+                        "type": "JSXIdentifier",
+                      },
+                      "start": 118,
+                      "type": "JSXAttribute",
+                      "value": Node {
+                        "end": 144,
+                        "extra": {
+                          "raw": ""/users/:userId"",
+                          "rawValue": "/users/:userId",
+                        },
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 88,
+                            "index": 144,
+                            "line": 2,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 72,
+                            "index": 128,
+                            "line": 2,
+                          },
+                        },
+                        "start": 128,
+                        "type": "StringLiteral",
+                        "value": "/users/:userId",
+                      },
+                    },
+                  ],
+                  "end": 145,
+                  "loc": SourceLocation {
+                    "end": Position {
+                      "column": 89,
+                      "index": 145,
+                      "line": 2,
+                    },
+                    "filename": undefined,
+                    "identifierName": undefined,
+                    "start": Position {
+                      "column": 25,
+                      "index": 81,
+                      "line": 2,
+                    },
+                  },
+                  "name": Node {
+                    "end": 94,
+                    "loc": SourceLocation {
+                      "end": Position {
+                        "column": 38,
+                        "index": 94,
+                        "line": 2,
+                      },
+                      "filename": undefined,
+                      "identifierName": undefined,
+                      "start": Position {
+                        "column": 26,
+                        "index": 82,
+                        "line": 2,
+                      },
+                    },
+                    "name": "XrayBoundary",
+                    "start": 82,
+                    "type": "JSXIdentifier",
+                  },
+                  "selfClosing": false,
+                  "start": 81,
+                  "type": "JSXOpeningElement",
+                },
+                "start": 81,
+                "type": "JSXElement",
+              },
+              "end": 169,
+              "generator": false,
+              "id": null,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 113,
+                  "index": 169,
+                  "line": 2,
+                },
+                "filename": undefined,
+                "identifierName": undefined,
+                "start": Position {
+                  "column": 19,
+                  "index": 75,
+                  "line": 2,
+                },
+              },
+              "params": [],
+              "start": 75,
+              "type": "ArrowFunctionExpression",
+            },
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 113,
+                "index": 169,
+                "line": 2,
+              },
+              "filename": undefined,
+              "identifierName": undefined,
+              "start": Position {
+                "column": 6,
+                "index": 62,
+                "line": 2,
+              },
+            },
+            "start": 62,
+            "type": "VariableDeclarator",
+          },
+        ],
+        "end": 170,
+        "kind": "const",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 114,
+            "index": 170,
+            "line": 2,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 56,
+            "line": 2,
+          },
+        },
+        "start": 56,
+        "type": "VariableDeclaration",
+      },
+      Node {
+        "declaration": Node {
+          "end": 196,
+          "loc": SourceLocation {
+            "end": Position {
+              "column": 25,
+              "index": 196,
+              "line": 3,
+            },
+            "filename": undefined,
+            "identifierName": "UserDetail",
+            "start": Position {
+              "column": 15,
+              "index": 186,
+              "line": 3,
+            },
+          },
+          "name": "UserDetail",
+          "start": 186,
+          "type": "Identifier",
+        },
+        "end": 197,
+        "exportKind": "value",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 26,
+            "index": 197,
+            "line": 3,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 171,
+            "line": 3,
+          },
+        },
+        "start": 171,
+        "type": "ExportDefaultDeclaration",
+      },
+    ],
+    "directives": [],
+    "end": 197,
+    "extra": {
+      "topLevelAwait": false,
+    },
+    "interpreter": null,
+    "loc": SourceLocation {
+      "end": Position {
+        "column": 26,
+        "index": 197,
+        "line": 3,
+      },
+      "filename": undefined,
+      "identifierName": undefined,
+      "start": Position {
+        "column": 0,
+        "index": 0,
+        "line": 1,
+      },
+    },
+    "sourceType": "module",
+    "start": 0,
+    "type": "Program",
+  },
+  "start": 0,
+  "type": "File",
+}
+`;
+
+exports[`xray babel transform > snapshot: forwardRef AST 1`] = `
+Node {
+  "comments": [],
+  "end": 208,
+  "errors": [],
+  "loc": SourceLocation {
+    "end": Position {
+      "column": 3,
+      "index": 208,
+      "line": 4,
+    },
+    "filename": undefined,
+    "identifierName": undefined,
+    "start": Position {
+      "column": 0,
+      "index": 0,
+      "line": 1,
+    },
+  },
+  "program": Node {
+    "body": [
+      Node {
+        "attributes": [],
+        "end": 55,
+        "importKind": "value",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 55,
+            "index": 55,
+            "line": 1,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 0,
+            "line": 1,
+          },
+        },
+        "source": Node {
+          "end": 54,
+          "extra": {
+            "raw": ""react-router-xray/react"",
+            "rawValue": "react-router-xray/react",
+          },
+          "loc": SourceLocation {
+            "end": Position {
+              "column": 54,
+              "index": 54,
+              "line": 1,
+            },
+            "filename": undefined,
+            "identifierName": undefined,
+            "start": Position {
+              "column": 29,
+              "index": 29,
+              "line": 1,
+            },
+          },
+          "start": 29,
+          "type": "StringLiteral",
+          "value": "react-router-xray/react",
+        },
+        "specifiers": [
+          Node {
+            "end": 21,
+            "importKind": "value",
+            "imported": Node {
+              "end": 21,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 21,
+                  "index": 21,
+                  "line": 1,
+                },
+                "filename": undefined,
+                "identifierName": "XrayBoundary",
+                "start": Position {
+                  "column": 9,
+                  "index": 9,
+                  "line": 1,
+                },
+              },
+              "name": "XrayBoundary",
+              "start": 9,
+              "type": "Identifier",
+            },
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 21,
+                "index": 21,
+                "line": 1,
+              },
+              "filename": undefined,
+              "identifierName": undefined,
+              "start": Position {
+                "column": 9,
+                "index": 9,
+                "line": 1,
+              },
+            },
+            "local": Node {
+              "end": 21,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 21,
+                  "index": 21,
+                  "line": 1,
+                },
+                "filename": undefined,
+                "identifierName": "XrayBoundary",
+                "start": Position {
+                  "column": 9,
+                  "index": 9,
+                  "line": 1,
+                },
+              },
+              "name": "XrayBoundary",
+              "range": undefined,
+              "start": 9,
+              "type": "Identifier",
+            },
+            "start": 9,
+            "type": "ImportSpecifier",
+          },
+        ],
+        "start": 0,
+        "type": "ImportDeclaration",
+      },
+      Node {
+        "declaration": Node {
+          "arguments": [
+            Node {
+              "async": false,
+              "body": Node {
+                "body": [
+                  Node {
+                    "argument": Node {
+                      "children": [
+                        Node {
+                          "end": 188,
+                          "expression": Node {
+                            "children": [],
+                            "closingElement": null,
+                            "end": 187,
+                            "loc": SourceLocation {
+                              "end": Position {
+                                "column": 81,
+                                "index": 187,
+                                "line": 3,
+                              },
+                              "filename": undefined,
+                              "identifierName": undefined,
+                              "start": Position {
+                                "column": 74,
+                                "index": 180,
+                                "line": 3,
+                              },
+                            },
+                            "openingElement": Node {
+                              "attributes": [],
+                              "end": 187,
+                              "loc": SourceLocation {
+                                "end": Position {
+                                  "column": 81,
+                                  "index": 187,
+                                  "line": 3,
+                                },
+                                "filename": undefined,
+                                "identifierName": undefined,
+                                "start": Position {
+                                  "column": 74,
+                                  "index": 180,
+                                  "line": 3,
+                                },
+                              },
+                              "name": Node {
+                                "end": 184,
+                                "loc": SourceLocation {
+                                  "end": Position {
+                                    "column": 78,
+                                    "index": 184,
+                                    "line": 3,
+                                  },
+                                  "filename": undefined,
+                                  "identifierName": undefined,
+                                  "start": Position {
+                                    "column": 75,
+                                    "index": 181,
+                                    "line": 3,
+                                  },
+                                },
+                                "name": "div",
+                                "start": 181,
+                                "type": "JSXIdentifier",
+                              },
+                              "selfClosing": true,
+                              "start": 180,
+                              "type": "JSXOpeningElement",
+                            },
+                            "start": 180,
+                            "type": "JSXElement",
+                          },
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 82,
+                              "index": 188,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 73,
+                              "index": 179,
+                              "line": 3,
+                            },
+                          },
+                          "start": 179,
+                          "type": "JSXExpressionContainer",
+                        },
+                      ],
+                      "closingElement": Node {
+                        "end": 203,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 97,
+                            "index": 203,
+                            "line": 3,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 82,
+                            "index": 188,
+                            "line": 3,
+                          },
+                        },
+                        "name": Node {
+                          "end": 202,
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 96,
+                              "index": 202,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 84,
+                              "index": 190,
+                              "line": 3,
+                            },
+                          },
+                          "name": "XrayBoundary",
+                          "start": 190,
+                          "type": "JSXIdentifier",
+                        },
+                        "start": 188,
+                        "type": "JSXClosingElement",
+                      },
+                      "end": 203,
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 97,
+                          "index": 203,
+                          "line": 3,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 9,
+                          "index": 115,
+                          "line": 3,
+                        },
+                      },
+                      "openingElement": Node {
+                        "attributes": [
+                          Node {
+                            "end": 151,
+                            "loc": SourceLocation {
+                              "end": Position {
+                                "column": 45,
+                                "index": 151,
+                                "line": 3,
+                              },
+                              "filename": undefined,
+                              "identifierName": undefined,
+                              "start": Position {
+                                "column": 23,
+                                "index": 129,
+                                "line": 3,
+                              },
+                            },
+                            "name": Node {
+                              "end": 136,
+                              "loc": SourceLocation {
+                                "end": Position {
+                                  "column": 30,
+                                  "index": 136,
+                                  "line": 3,
+                                },
+                                "filename": undefined,
+                                "identifierName": undefined,
+                                "start": Position {
+                                  "column": 23,
+                                  "index": 129,
+                                  "line": 3,
+                                },
+                              },
+                              "name": "routeId",
+                              "start": 129,
+                              "type": "JSXIdentifier",
+                            },
+                            "start": 129,
+                            "type": "JSXAttribute",
+                            "value": Node {
+                              "end": 151,
+                              "extra": {
+                                "raw": ""users-userid"",
+                                "rawValue": "users-userid",
+                              },
+                              "loc": SourceLocation {
+                                "end": Position {
+                                  "column": 45,
+                                  "index": 151,
+                                  "line": 3,
+                                },
+                                "filename": undefined,
+                                "identifierName": undefined,
+                                "start": Position {
+                                  "column": 31,
+                                  "index": 137,
+                                  "line": 3,
+                                },
+                              },
+                              "start": 137,
+                              "type": "StringLiteral",
+                              "value": "users-userid",
+                            },
+                          },
+                          Node {
+                            "end": 178,
+                            "loc": SourceLocation {
+                              "end": Position {
+                                "column": 72,
+                                "index": 178,
+                                "line": 3,
+                              },
+                              "filename": undefined,
+                              "identifierName": undefined,
+                              "start": Position {
+                                "column": 46,
+                                "index": 152,
+                                "line": 3,
+                              },
+                            },
+                            "name": Node {
+                              "end": 161,
+                              "loc": SourceLocation {
+                                "end": Position {
+                                  "column": 55,
+                                  "index": 161,
+                                  "line": 3,
+                                },
+                                "filename": undefined,
+                                "identifierName": undefined,
+                                "start": Position {
+                                  "column": 46,
+                                  "index": 152,
+                                  "line": 3,
+                                },
+                              },
+                              "name": "routePath",
+                              "start": 152,
+                              "type": "JSXIdentifier",
+                            },
+                            "start": 152,
+                            "type": "JSXAttribute",
+                            "value": Node {
+                              "end": 178,
+                              "extra": {
+                                "raw": ""/users/:userId"",
+                                "rawValue": "/users/:userId",
+                              },
+                              "loc": SourceLocation {
+                                "end": Position {
+                                  "column": 72,
+                                  "index": 178,
+                                  "line": 3,
+                                },
+                                "filename": undefined,
+                                "identifierName": undefined,
+                                "start": Position {
+                                  "column": 56,
+                                  "index": 162,
+                                  "line": 3,
+                                },
+                              },
+                              "start": 162,
+                              "type": "StringLiteral",
+                              "value": "/users/:userId",
+                            },
+                          },
+                        ],
+                        "end": 179,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 73,
+                            "index": 179,
+                            "line": 3,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 9,
+                            "index": 115,
+                            "line": 3,
+                          },
+                        },
+                        "name": Node {
+                          "end": 128,
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 22,
+                              "index": 128,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 10,
+                              "index": 116,
+                              "line": 3,
+                            },
+                          },
+                          "name": "XrayBoundary",
+                          "start": 116,
+                          "type": "JSXIdentifier",
+                        },
+                        "selfClosing": false,
+                        "start": 115,
+                        "type": "JSXOpeningElement",
+                      },
+                      "start": 115,
+                      "type": "JSXElement",
+                    },
+                    "end": 204,
+                    "loc": SourceLocation {
+                      "end": Position {
+                        "column": 98,
+                        "index": 204,
+                        "line": 3,
+                      },
+                      "filename": undefined,
+                      "identifierName": undefined,
+                      "start": Position {
+                        "column": 2,
+                        "index": 108,
+                        "line": 3,
+                      },
+                    },
+                    "start": 108,
+                    "type": "ReturnStatement",
+                  },
+                ],
+                "directives": [],
+                "end": 206,
+                "loc": SourceLocation {
+                  "end": Position {
+                    "column": 1,
+                    "index": 206,
+                    "line": 4,
+                  },
+                  "filename": undefined,
+                  "identifierName": undefined,
+                  "start": Position {
+                    "column": 48,
+                    "index": 104,
+                    "line": 2,
+                  },
+                },
+                "start": 104,
+                "type": "BlockStatement",
+              },
+              "end": 206,
+              "generator": false,
+              "id": Node {
+                "end": 101,
+                "loc": SourceLocation {
+                  "end": Position {
+                    "column": 45,
+                    "index": 101,
+                    "line": 2,
+                  },
+                  "filename": undefined,
+                  "identifierName": "UserDetail",
+                  "start": Position {
+                    "column": 35,
+                    "index": 91,
+                    "line": 2,
+                  },
+                },
+                "name": "UserDetail",
+                "start": 91,
+                "type": "Identifier",
+              },
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 1,
+                  "index": 206,
+                  "line": 4,
+                },
+                "filename": undefined,
+                "identifierName": undefined,
+                "start": Position {
+                  "column": 26,
+                  "index": 82,
+                  "line": 2,
+                },
+              },
+              "params": [],
+              "start": 82,
+              "type": "FunctionExpression",
+            },
+          ],
+          "callee": Node {
+            "end": 81,
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 25,
+                "index": 81,
+                "line": 2,
+              },
+              "filename": undefined,
+              "identifierName": "forwardRef",
+              "start": Position {
+                "column": 15,
+                "index": 71,
+                "line": 2,
+              },
+            },
+            "name": "forwardRef",
+            "start": 71,
+            "type": "Identifier",
+          },
+          "end": 207,
+          "loc": SourceLocation {
+            "end": Position {
+              "column": 2,
+              "index": 207,
+              "line": 4,
+            },
+            "filename": undefined,
+            "identifierName": undefined,
+            "start": Position {
+              "column": 15,
+              "index": 71,
+              "line": 2,
+            },
+          },
+          "start": 71,
+          "type": "CallExpression",
+        },
+        "end": 208,
+        "exportKind": "value",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 3,
+            "index": 208,
+            "line": 4,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 56,
+            "line": 2,
+          },
+        },
+        "start": 56,
+        "type": "ExportDefaultDeclaration",
+      },
+    ],
+    "directives": [],
+    "end": 208,
+    "extra": {
+      "topLevelAwait": false,
+    },
+    "interpreter": null,
+    "loc": SourceLocation {
+      "end": Position {
+        "column": 3,
+        "index": 208,
+        "line": 4,
+      },
+      "filename": undefined,
+      "identifierName": undefined,
+      "start": Position {
+        "column": 0,
+        "index": 0,
+        "line": 1,
+      },
+    },
+    "sourceType": "module",
+    "start": 0,
+    "type": "Program",
+  },
+  "start": 0,
+  "type": "File",
+}
+`;
+
+exports[`xray babel transform > snapshot: function declaration AST 1`] = `
+Node {
+  "comments": [],
+  "end": 198,
+  "errors": [],
+  "loc": SourceLocation {
+    "end": Position {
+      "column": 3,
+      "index": 198,
+      "line": 4,
+    },
+    "filename": undefined,
+    "identifierName": undefined,
+    "start": Position {
+      "column": 0,
+      "index": 0,
+      "line": 1,
+    },
+  },
+  "program": Node {
+    "body": [
+      Node {
+        "attributes": [],
+        "end": 55,
+        "importKind": "value",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 55,
+            "index": 55,
+            "line": 1,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 0,
+            "line": 1,
+          },
+        },
+        "source": Node {
+          "end": 54,
+          "extra": {
+            "raw": ""react-router-xray/react"",
+            "rawValue": "react-router-xray/react",
+          },
+          "loc": SourceLocation {
+            "end": Position {
+              "column": 54,
+              "index": 54,
+              "line": 1,
+            },
+            "filename": undefined,
+            "identifierName": undefined,
+            "start": Position {
+              "column": 29,
+              "index": 29,
+              "line": 1,
+            },
+          },
+          "start": 29,
+          "type": "StringLiteral",
+          "value": "react-router-xray/react",
+        },
+        "specifiers": [
+          Node {
+            "end": 21,
+            "importKind": "value",
+            "imported": Node {
+              "end": 21,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 21,
+                  "index": 21,
+                  "line": 1,
+                },
+                "filename": undefined,
+                "identifierName": "XrayBoundary",
+                "start": Position {
+                  "column": 9,
+                  "index": 9,
+                  "line": 1,
+                },
+              },
+              "name": "XrayBoundary",
+              "start": 9,
+              "type": "Identifier",
+            },
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 21,
+                "index": 21,
+                "line": 1,
+              },
+              "filename": undefined,
+              "identifierName": undefined,
+              "start": Position {
+                "column": 9,
+                "index": 9,
+                "line": 1,
+              },
+            },
+            "local": Node {
+              "end": 21,
+              "loc": SourceLocation {
+                "end": Position {
+                  "column": 21,
+                  "index": 21,
+                  "line": 1,
+                },
+                "filename": undefined,
+                "identifierName": "XrayBoundary",
+                "start": Position {
+                  "column": 9,
+                  "index": 9,
+                  "line": 1,
+                },
+              },
+              "name": "XrayBoundary",
+              "range": undefined,
+              "start": 9,
+              "type": "Identifier",
+            },
+            "start": 9,
+            "type": "ImportSpecifier",
+          },
+        ],
+        "start": 0,
+        "type": "ImportDeclaration",
+      },
+      Node {
+        "declaration": Node {
+          "async": false,
+          "body": Node {
+            "body": [
+              Node {
+                "argument": Node {
+                  "children": [
+                    Node {
+                      "end": 178,
+                      "expression": Node {
+                        "children": [],
+                        "closingElement": null,
+                        "end": 177,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 81,
+                            "index": 177,
+                            "line": 3,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 74,
+                            "index": 170,
+                            "line": 3,
+                          },
+                        },
+                        "openingElement": Node {
+                          "attributes": [],
+                          "end": 177,
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 81,
+                              "index": 177,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 74,
+                              "index": 170,
+                              "line": 3,
+                            },
+                          },
+                          "name": Node {
+                            "end": 174,
+                            "loc": SourceLocation {
+                              "end": Position {
+                                "column": 78,
+                                "index": 174,
+                                "line": 3,
+                              },
+                              "filename": undefined,
+                              "identifierName": undefined,
+                              "start": Position {
+                                "column": 75,
+                                "index": 171,
+                                "line": 3,
+                              },
+                            },
+                            "name": "div",
+                            "start": 171,
+                            "type": "JSXIdentifier",
+                          },
+                          "selfClosing": true,
+                          "start": 170,
+                          "type": "JSXOpeningElement",
+                        },
+                        "start": 170,
+                        "type": "JSXElement",
+                      },
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 82,
+                          "index": 178,
+                          "line": 3,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 73,
+                          "index": 169,
+                          "line": 3,
+                        },
+                      },
+                      "start": 169,
+                      "type": "JSXExpressionContainer",
+                    },
+                  ],
+                  "closingElement": Node {
+                    "end": 193,
+                    "loc": SourceLocation {
+                      "end": Position {
+                        "column": 97,
+                        "index": 193,
+                        "line": 3,
+                      },
+                      "filename": undefined,
+                      "identifierName": undefined,
+                      "start": Position {
+                        "column": 82,
+                        "index": 178,
+                        "line": 3,
+                      },
+                    },
+                    "name": Node {
+                      "end": 192,
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 96,
+                          "index": 192,
+                          "line": 3,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 84,
+                          "index": 180,
+                          "line": 3,
+                        },
+                      },
+                      "name": "XrayBoundary",
+                      "start": 180,
+                      "type": "JSXIdentifier",
+                    },
+                    "start": 178,
+                    "type": "JSXClosingElement",
+                  },
+                  "end": 193,
+                  "loc": SourceLocation {
+                    "end": Position {
+                      "column": 97,
+                      "index": 193,
+                      "line": 3,
+                    },
+                    "filename": undefined,
+                    "identifierName": undefined,
+                    "start": Position {
+                      "column": 9,
+                      "index": 105,
+                      "line": 3,
+                    },
+                  },
+                  "openingElement": Node {
+                    "attributes": [
+                      Node {
+                        "end": 141,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 45,
+                            "index": 141,
+                            "line": 3,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 23,
+                            "index": 119,
+                            "line": 3,
+                          },
+                        },
+                        "name": Node {
+                          "end": 126,
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 30,
+                              "index": 126,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 23,
+                              "index": 119,
+                              "line": 3,
+                            },
+                          },
+                          "name": "routeId",
+                          "start": 119,
+                          "type": "JSXIdentifier",
+                        },
+                        "start": 119,
+                        "type": "JSXAttribute",
+                        "value": Node {
+                          "end": 141,
+                          "extra": {
+                            "raw": ""users-userid"",
+                            "rawValue": "users-userid",
+                          },
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 45,
+                              "index": 141,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 31,
+                              "index": 127,
+                              "line": 3,
+                            },
+                          },
+                          "start": 127,
+                          "type": "StringLiteral",
+                          "value": "users-userid",
+                        },
+                      },
+                      Node {
+                        "end": 168,
+                        "loc": SourceLocation {
+                          "end": Position {
+                            "column": 72,
+                            "index": 168,
+                            "line": 3,
+                          },
+                          "filename": undefined,
+                          "identifierName": undefined,
+                          "start": Position {
+                            "column": 46,
+                            "index": 142,
+                            "line": 3,
+                          },
+                        },
+                        "name": Node {
+                          "end": 151,
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 55,
+                              "index": 151,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 46,
+                              "index": 142,
+                              "line": 3,
+                            },
+                          },
+                          "name": "routePath",
+                          "start": 142,
+                          "type": "JSXIdentifier",
+                        },
+                        "start": 142,
+                        "type": "JSXAttribute",
+                        "value": Node {
+                          "end": 168,
+                          "extra": {
+                            "raw": ""/users/:userId"",
+                            "rawValue": "/users/:userId",
+                          },
+                          "loc": SourceLocation {
+                            "end": Position {
+                              "column": 72,
+                              "index": 168,
+                              "line": 3,
+                            },
+                            "filename": undefined,
+                            "identifierName": undefined,
+                            "start": Position {
+                              "column": 56,
+                              "index": 152,
+                              "line": 3,
+                            },
+                          },
+                          "start": 152,
+                          "type": "StringLiteral",
+                          "value": "/users/:userId",
+                        },
+                      },
+                    ],
+                    "end": 169,
+                    "loc": SourceLocation {
+                      "end": Position {
+                        "column": 73,
+                        "index": 169,
+                        "line": 3,
+                      },
+                      "filename": undefined,
+                      "identifierName": undefined,
+                      "start": Position {
+                        "column": 9,
+                        "index": 105,
+                        "line": 3,
+                      },
+                    },
+                    "name": Node {
+                      "end": 118,
+                      "loc": SourceLocation {
+                        "end": Position {
+                          "column": 22,
+                          "index": 118,
+                          "line": 3,
+                        },
+                        "filename": undefined,
+                        "identifierName": undefined,
+                        "start": Position {
+                          "column": 10,
+                          "index": 106,
+                          "line": 3,
+                        },
+                      },
+                      "name": "XrayBoundary",
+                      "start": 106,
+                      "type": "JSXIdentifier",
+                    },
+                    "selfClosing": false,
+                    "start": 105,
+                    "type": "JSXOpeningElement",
+                  },
+                  "start": 105,
+                  "type": "JSXElement",
+                },
+                "end": 194,
+                "loc": SourceLocation {
+                  "end": Position {
+                    "column": 98,
+                    "index": 194,
+                    "line": 3,
+                  },
+                  "filename": undefined,
+                  "identifierName": undefined,
+                  "start": Position {
+                    "column": 2,
+                    "index": 98,
+                    "line": 3,
+                  },
+                },
+                "start": 98,
+                "type": "ReturnStatement",
+              },
+            ],
+            "directives": [],
+            "end": 196,
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 1,
+                "index": 196,
+                "line": 4,
+              },
+              "filename": undefined,
+              "identifierName": undefined,
+              "start": Position {
+                "column": 38,
+                "index": 94,
+                "line": 2,
+              },
+            },
+            "start": 94,
+            "type": "BlockStatement",
+          },
+          "end": 196,
+          "extra": {
+            "parenStart": 71,
+            "parenthesized": true,
+          },
+          "generator": false,
+          "id": Node {
+            "end": 91,
+            "loc": SourceLocation {
+              "end": Position {
+                "column": 35,
+                "index": 91,
+                "line": 2,
+              },
+              "filename": undefined,
+              "identifierName": "UserDetail",
+              "start": Position {
+                "column": 25,
+                "index": 81,
+                "line": 2,
+              },
+            },
+            "name": "UserDetail",
+            "start": 81,
+            "type": "Identifier",
+          },
+          "loc": SourceLocation {
+            "end": Position {
+              "column": 1,
+              "index": 196,
+              "line": 4,
+            },
+            "filename": undefined,
+            "identifierName": undefined,
+            "start": Position {
+              "column": 16,
+              "index": 72,
+              "line": 2,
+            },
+          },
+          "params": [],
+          "start": 72,
+          "type": "FunctionExpression",
+        },
+        "end": 198,
+        "exportKind": "value",
+        "loc": SourceLocation {
+          "end": Position {
+            "column": 3,
+            "index": 198,
+            "line": 4,
+          },
+          "filename": undefined,
+          "identifierName": undefined,
+          "start": Position {
+            "column": 0,
+            "index": 56,
+            "line": 2,
+          },
+        },
+        "start": 56,
+        "type": "ExportDefaultDeclaration",
+      },
+    ],
+    "directives": [],
+    "end": 198,
+    "extra": {
+      "topLevelAwait": false,
+    },
+    "interpreter": null,
+    "loc": SourceLocation {
+      "end": Position {
+        "column": 3,
+        "index": 198,
+        "line": 4,
+      },
+      "filename": undefined,
+      "identifierName": undefined,
+      "start": Position {
+        "column": 0,
+        "index": 0,
+        "line": 1,
+      },
+    },
+    "sourceType": "module",
+    "start": 0,
+    "type": "Program",
+  },
+  "start": 0,
+  "type": "File",
+}
+`;

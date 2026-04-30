@@ -1,0 +1,31 @@
+{
+  "name": "@react-router-xray/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./wasm": {
+      "types": "./dist/wasm.d.ts",
+      "import": "./dist/wasm.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm run build:ts && pnpm run build:napi && pnpm run build:wasm",
+    "build:ts": "tsc -p tsconfig.json",
+    "build:napi": "napi build --platform --manifest-path ./Cargo.toml --features napi",
+    "build:wasm": "wasm-pack build --target web --out-dir ../../dist/wasm ./ -- --features wasm",
+    "test": "cargo test --features cli,wasm,napi"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.4",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wasm target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Rust tests
+        run: cargo test --workspace
+
+      - name: TypeScript build
+        run: pnpm turbo run build --filter='!@react-router-xray/core'
+
+      - name: Build CLI binary
+        run: cargo build -p react-router-xray-core --features cli
+
+      - name: CLI smoke test
+        run: cargo run -p react-router-xray-core --features cli -- --help

@@ -1,0 +1,18 @@
+{
+  "name": "react-router-xray",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "xray": "./scripts/run.js"
+  },
+  "scripts": {
+    "build": "napi build --platform --bin xray --manifest-path ../core/Cargo.toml --features cli",
+    "dev": "node ./scripts/run.js --help",
+    "test": "node ./scripts/run.js --help"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.4",
+    "typescript": "^5.6.3"
+  }
+}

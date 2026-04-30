@@ -1,0 +1,33 @@
+{
+  "name": "vite-plugin-react-router-xray",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@react-router-xray/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/parser": "^7.26.0",
+    "@babel/plugin-syntax-jsx": "^7.25.9",
+    "@babel/preset-typescript": "^7.26.0",
+    "@babel/traverse": "^7.26.0",
+    "@babel/types": "^7.26.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.3"
+  }
+}
