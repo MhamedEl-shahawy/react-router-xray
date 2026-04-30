@@ -1,6 +1,42 @@
 # react-router-xray
 
-CLI package for React Router Xray.
+CLI for static analysis and reporting of React Router route trees.
 
-- Publishes `xray` command through `bin`.
-- Uses `@napi-rs/cli` to build and distribute platform binaries.
+## Install
+
+```bash
+npm install -D react-router-xray
+```
+
+## Usage
+
+```bash
+xray routes
+xray analyze
+xray check --fail-on error
+xray report --open
+```
+
+## Config
+
+Create `xray.config.json` in your project root:
+
+```json
+{
+  "routerFile": "src/router.tsx",
+  "rules": {
+    "missingErrorBoundary": "error",
+    "deepNesting": { "level": "warn", "maxDepth": 4 },
+    "duplicatePath": "error"
+  },
+  "thresholds": { "maxComplexityScore": 60 }
+}
+```
+
+## Notes
+
+Prebuilt binaries are provided for Linux, macOS, and Windows. Rust is not required to consume the published package.
+
+## License
+
+MIT

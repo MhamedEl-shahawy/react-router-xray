@@ -1,6 +1,6 @@
 {
   "name": "react-router-xray-core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Rust and TypeScript core analyzer for React Router route inspection and matching.",
   "license": "MIT",
   "repository": {

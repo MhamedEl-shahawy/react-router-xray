@@ -1,6 +1,31 @@
-# react-router-xray/react
+# react-router-xray-react
 
-React overlay and hooks package for rendering route analysis in-app.
+React overlay package for live route diagnostics and DOM highlighting.
 
-- Uses the core WASM exports.
-- Provides `useRouteXray` and `RouteXrayOverlay`.
+## Install
+
+```bash
+npm install -D react-router-xray-react
+```
+
+## Usage
+
+```tsx
+import { RouterProvider } from "react-router-dom";
+import { RouteXrayOverlay } from "react-router-xray-react";
+
+<RouterProvider router={router} />
+<RouteXrayOverlay />
+```
+
+The overlay renders in development and can be toggled with `Alt+R`.
+
+## Exports
+
+- `RouteXrayOverlay`
+- `XrayBoundary`
+- `useRouteXray`
+
+## License
+
+MIT
