@@ -2,7 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@react-router-xray/react": ["../../packages/react/src/index.ts"],
+      "vite-plugin-react-router-xray": ["../../packages/vite-plugin/src/index.ts"]
+    }
   },
   "include": ["src", "vite.config.ts"]
 }

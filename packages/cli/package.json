@@ -32,7 +32,7 @@
     "xray": "./scripts/run.js"
   },
   "scripts": {
-    "build": "napi build --platform --bin xray --cargo-cwd ../core --features cli",
+    "build": "node ./scripts/build.js",
     "dev": "node ./scripts/run.js --help",
     "test": "node ./scripts/run.js --help",
     "prepublishOnly": "pnpm run build"

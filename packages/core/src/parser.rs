@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use swc_core::common::{sync::Lrc, FileName, SourceMap};
 use swc_core::ecma::ast::*;
-use swc_core::ecma::parser::{lexer::Lexer, EsVersion, Parser, StringInput, Syntax, TsSyntax};
+use swc_core::ecma::parser::{lexer::Lexer, Parser, StringInput, Syntax, TsSyntax};
 use swc_core::ecma::visit::{Visit, VisitWith};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -187,7 +187,7 @@ impl RouteVisitor {
             match key {
                 "path" => {
                     if let Some(JSXAttrValue::Lit(Lit::Str(s))) = &attr.value {
-                        node.path = Some(s.value.to_string_lossy().to_string());
+                        node.path = Some(s.value.to_string());
                     }
                 }
                 "element" | "Component" => {
@@ -234,7 +234,8 @@ impl Visit for RouteVisitor {
                 if let Expr::Array(arr) = &*first_arg.expr {
                     for elem in arr.elems.iter().flatten() {
                         if let Expr::Object(obj) = &*elem.expr {
-                            self.routes.push(self.route_from_object(obj));
+                            let route = self.route_from_object(obj);
+                            self.routes.push(route);
                         }
                     }
                 }
@@ -275,14 +276,14 @@ impl Visit for RouteVisitor {
 fn prop_name(key: &PropName) -> Option<String> {
     match key {
         PropName::Ident(id) => Some(id.sym.to_string()),
-        PropName::Str(s) => Some(s.value.to_string_lossy().to_string()),
+        PropName::Str(s) => Some(s.value.to_string()),
         _ => None,
     }
 }
 
 fn expr_to_string(expr: &Expr) -> Option<String> {
     match expr {
-        Expr::Lit(Lit::Str(s)) => Some(s.value.to_string_lossy().to_string()),
+        Expr::Lit(Lit::Str(s)) => Some(s.value.to_string()),
         _ => None,
     }
 }

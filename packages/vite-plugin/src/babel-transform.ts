@@ -15,12 +15,12 @@ export function xrayBabelPlugin(options: XrayTransformOptions): PluginObj {
   return {
     name: "react-router-xray-instrument-route",
     visitor: {
-      Program(path) {
+      Program(path: any) {
         if (!shouldTransform(options)) return;
         let didWrap = false;
 
         path.traverse({
-          ExportDefaultDeclaration(exportPath) {
+          ExportDefaultDeclaration(exportPath: any) {
             if (didWrap) return;
             const declaration = exportPath.node.declaration;
             const wrapped = wrapDefaultExportComponent(exportPath, declaration, options);
@@ -79,7 +79,7 @@ function wrapDefaultExportComponent(
       wrapFunctionBodyReturns(bindingNode.body, options);
       return true;
     }
-    if (t.isVariableDeclarator(bindingNode) && bindingNode.init) {
+    if (t.isVariableDeclarator(bindingNode) && bindingNode.init && t.isLVal(bindingNode.id)) {
       return wrapExpressionComponent(bindingNode.id, bindingNode.init, options);
     }
     return false;
@@ -209,18 +209,18 @@ function returnsJsx(fn: t.FunctionDeclaration | t.FunctionExpression | t.ArrowFu
   traverse(
     t.file(t.program([t.expressionStatement(t.toExpression(fn as any))])),
     {
-      ReturnStatement(path) {
+      ReturnStatement(path: any) {
         if (!path.node.argument) return;
         if (t.isJSXElement(path.node.argument) || t.isJSXFragment(path.node.argument)) {
           found = true;
           path.stop();
         }
       },
-      JSXElement(path) {
+      JSXElement(path: any) {
         found = true;
         path.stop();
       },
-      JSXFragment(path) {
+      JSXFragment(path: any) {
         found = true;
         path.stop();
       }
