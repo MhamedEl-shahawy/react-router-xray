@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -p tsconfig.json && vite build",
     "preview": "vite preview",
-    "analyze": "xray --input \"/,/dashboard,/settings\""
+    "analyze": "xray --input \"/,/slow,/app/inbox,/deep/l1/l2/l3/l4,/nest/two/three/leaf,/wild/files/docs/readme\""
   },
   "dependencies": {
     "react": "^18.3.1",
