@@ -1,5 +1,12 @@
 # @apps/demo
 
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - react-router-xray-react@2.1.0
+
 ## 0.1.10
 
 ### Patch Changes

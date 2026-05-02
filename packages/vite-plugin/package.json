@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-react-router-xray",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Vite plugin for React Router analysis, virtual manifests, and dev instrumentation.",
   "license": "MIT",
   "repository": {

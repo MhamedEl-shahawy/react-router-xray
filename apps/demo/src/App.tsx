@@ -1,37 +1,57 @@
-import { Link, Outlet, Route, Routes } from "react-router-dom";
+import { NavLink, Outlet, Route, Routes } from "react-router-dom";
 import { RouteXrayOverlay } from "react-router-xray-react";
+
+import "./demo.css";
+
+type DemoNavItem = { to: string; title: string; tag: string; end?: boolean };
+
+const NAV: DemoNavItem[] = [
+  { to: "/", title: "Home", tag: "minimal", end: true },
+  { to: "/slow", title: "Slow", tag: "shallow chain" },
+  { to: "/app/inbox", title: "App inbox", tag: "moderate depth" },
+  { to: "/deep/l1/l2/l3/l4", title: "Deep URL", tag: "depth penalty" },
+  { to: "/nest/two/three/leaf", title: "Nested layouts", tag: "chain penalty" },
+  { to: "/wild/files/docs/readme", title: "Wildcard", tag: "splat" },
+];
 
 function Shell() {
   return (
-    <div style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: 16, marginBottom: 16 }}>
-      <p style={{ margin: "0 0 12px", fontSize: 13, color: "#475569", maxWidth: 720 }}>
-        Use Route X-Ray (corner button or Alt+R). Each destination uses a different pathname shape so{" "}
-        <strong>structural clarity</strong> moves between minimal and heavy.
-      </p>
-      <nav style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-        <Link to="/">Home · minimal</Link>
-        <span style={{ color: "#cbd5e1" }}>|</span>
-        <Link to="/slow">Slow · shallow chain</Link>
-        <span style={{ color: "#cbd5e1" }}>|</span>
-        <Link to="/app/inbox">App inbox · moderate depth</Link>
-        <span style={{ color: "#cbd5e1" }}>|</span>
-        <Link to="/deep/l1/l2/l3/l4">Deep URL · depth penalty</Link>
-        <span style={{ color: "#cbd5e1" }}>|</span>
-        <Link to="/nest/two/three/leaf">Nested layouts · chain penalty</Link>
-        <span style={{ color: "#cbd5e1" }}>|</span>
-        <Link to="/wild/files/docs/readme">Wildcard segment</Link>
-      </nav>
-      <Outlet />
+    <div className="demo-shell">
+      <div className="demo-nav-wrap">
+        <p className="demo-nav-label">Sample routes · pathname shape vs clarity</p>
+        <nav className="demo-nav" aria-label="Demo routes">
+          {NAV.map(({ to, end, title, tag }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end === true}
+              className={({ isActive }) =>
+                isActive ? "demo-route-link demo-route-link--active" : "demo-route-link"
+              }
+            >
+              <code className="demo-route-path">{to === "/" ? "/" : to}</code>
+              <span className="demo-route-meta">
+                <span className="demo-route-title">{title}</span>
+                <span className="demo-route-sep" aria-hidden="true">
+                  ·
+                </span>
+                <span className="demo-route-tag">{tag}</span>
+              </span>
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+      <div className="demo-outlet">
+        <Outlet />
+      </div>
     </div>
   );
 }
 
 function NestChrome({ label }: { label: string }) {
   return (
-    <div style={{ marginTop: 12, paddingLeft: 14, borderLeft: "3px solid #94a3b8" }}>
-      <div style={{ fontSize: 11, color: "#64748b", letterSpacing: "0.04em", marginBottom: 8 }}>
-        {label}
-      </div>
+    <div className="demo-nest">
+      <div className="demo-nest-label">{label}</div>
       <Outlet />
     </div>
   );
@@ -39,9 +59,9 @@ function NestChrome({ label }: { label: string }) {
 
 function Page({ title, hint }: { title: string; hint?: string }) {
   return (
-    <article style={{ marginTop: 20 }}>
-      <h2 style={{ margin: "0 0 8px" }}>{title}</h2>
-      {hint ? <p style={{ margin: 0, color: "#64748b", fontSize: 14, maxWidth: 640 }}>{hint}</p> : null}
+    <article className="demo-page">
+      <h2 className="demo-page-title">{title}</h2>
+      {hint ? <p className="demo-page-hint">{hint}</p> : null}
     </article>
   );
 }
@@ -61,8 +81,30 @@ const xh = (
 
 export default function App() {
   return (
-    <main style={{ fontFamily: "system-ui, sans-serif", padding: 24, maxWidth: 900 }}>
-      <h1 style={{ marginTop: 0 }}>React Router X-Ray demo</h1>
+    <main className="demo-app">
+      <header className="demo-header">
+        <p className="demo-eyebrow">react-router-xray</p>
+        <h1 className="demo-title">Route X-Ray demo</h1>
+        <p className="demo-intro">
+          Open <strong>Route X-Ray</strong> from the floating control or keyboard shortcuts. Each link hits a different pathname
+          shape so clarity scores and penalty breakdowns change in predictable ways.
+        </p>
+        <div className="demo-kbd">
+          <span className="demo-kbd-row">
+            Toggle panel <kbd>Alt</kbd>
+            <span aria-hidden>+</span>
+            <kbd>R</kbd>
+          </span>
+          <span className="demo-kbd-row">
+            Alternative <kbd>Ctrl</kbd>
+            <span aria-hidden>+</span>
+            <kbd>Shift</kbd>
+            <span aria-hidden>+</span>
+            <kbd>X</kbd>
+          </span>
+        </div>
+      </header>
+
       <Routes>
         <Route path="/" element={<Shell />}>
           <Route
@@ -133,6 +175,7 @@ export default function App() {
           />
         </Route>
       </Routes>
+
       <RouteXrayOverlay />
     </main>
   );
