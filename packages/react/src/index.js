@@ -51,14 +51,51 @@ function injectStyles() {
   .xray-legend-body{padding-top:6px;color:#cbd5e1;font-size:11px;line-height:1.45}
   .xray-legend-body p{margin:0 0 8px}
   .xray-code{font-family:ui-monospace,monospace;font-size:10px;color:#e2e8f0}
-  .xray-metrics{font-size:10px;color:#94a3b8;line-height:1.35;margin-top:4px}
   .xray-insight{padding:4px 0;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:11px;line-height:1.35}
   .xray-insight:last-child{border-bottom:none}
+  .xray-clarity-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+  .xray-clarity-scoreblock{display:flex;align-items:baseline;gap:4px}
+  .xray-clarity-num{font-size:26px;font-weight:700;line-height:1;color:#f8fafc;letter-spacing:-0.02em}
+  .xray-clarity-denom{font-size:12px;color:#94a3b8;font-weight:600}
+  .xray-tier{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid transparent;white-space:nowrap;line-height:1.2}
+  .xray-tier-minimal{border-color:#15803d;color:#bbf7d0;background:rgba(22,163,74,.18)}
+  .xray-tier-moderate{border-color:#2563eb;color:#bfdbfe;background:rgba(37,99,235,.2)}
+  .xray-tier-noticeable{border-color:#ca8a04;color:#fef08a;background:rgba(234,179,8,.18)}
+  .xray-tier-heavy{border-color:#b91c1c;color:#fecaca;background:rgba(220,38,38,.18)}
+  .xray-clarity-headline{margin:6px 0 4px;color:#e2e8f0;font-size:12px;line-height:1.45;font-weight:600}
+  .xray-clarity-sub{margin:0 0 10px;color:#94a3b8;font-size:10px;line-height:1.45}
+  .xray-clarity-loading{color:#94a3b8;font-size:11px}
+  .xray-breakdown{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:11px}
+  .xray-breakdown th{color:#94a3b8;text-align:left;font-weight:700;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 0;border-bottom:1px solid #334155}
+  .xray-breakdown-ptshead{text-align:right}
+  .xray-breakdown td{padding:6px 0;border-bottom:1px solid #1e293b;vertical-align:top}
+  .xray-breakdown-label{font-weight:600;color:#e2e8f0}
+  .xray-breakdown-detail{margin-top:3px;color:#94a3b8;font-size:10px;line-height:1.35}
+  .xray-breakdown-pts{text-align:right;font-variant-numeric:tabular-nums;color:#fecaca;font-weight:600}
+  .xray-breakdown-total td{padding-top:8px;border-bottom:none;color:#cbd5e1;font-weight:700}
+  .xray-breakdown-total .xray-breakdown-pts{color:#fda4af}
+  .xray-legend-nested{margin-top:8px}
   [data-xray-hovered="true"]{outline:2px solid #6366f1;position:relative}
   [data-xray-hovered="true"]::before{content:attr(data-xray-label);position:absolute;top:-24px;left:0;background:#312e81;color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;white-space:nowrap;z-index:2147483647}
   `;
     document.head.appendChild(style);
     styleInjected = true;
+}
+function tierPresentation(tier) {
+    switch (tier) {
+        case "minimal":
+            return { className: "xray-tier xray-tier-minimal", label: "Minimal load" };
+        case "moderate":
+            return { className: "xray-tier xray-tier-moderate", label: "Moderate load" };
+        case "noticeable":
+            return { className: "xray-tier xray-tier-noticeable", label: "Noticeable load" };
+        default:
+            return { className: "xray-tier xray-tier-heavy", label: "Heavy load" };
+    }
+}
+function ClarityTierBadge({ tier }) {
+    const { className, label } = tierPresentation(tier);
+    return _jsx("span", { className: className, children: label });
 }
 function renderInBody(node) {
     if (typeof document === "undefined")
@@ -128,7 +165,8 @@ export function useRouteXray(matches, enabled = true) {
                     const result = await mod.analyzeRoutes(routeLines);
                     if (cancelled)
                         return;
-                    setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
+                    const clarity = Number(result.metrics?.clarityScore ?? result.score) || 0;
+                    setScore(Math.max(0, Math.min(100, clarity)));
                     setInsights(Array.isArray(result.insights) ? result.insights : []);
                     setMetrics(result.metrics ?? null);
                 }
@@ -232,7 +270,6 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
     const { isOpen, setIsOpen, toggle } = useLocalOpenState(defaultOpen);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [wasmError, setWasmError] = useState(null);
-    const [score, setScore] = useState(0);
     const [insights, setInsights] = useState([]);
     const [analysisMetrics, setAnalysisMetrics] = useState(null);
     const [paramNames, setParamNames] = useState({});
@@ -263,7 +300,6 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
                     ]);
                     if (cancelled)
                         return;
-                    setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
                     setInsights(Array.isArray(result.insights) ? result.insights : []);
                     setAnalysisMetrics(result.metrics ?? null);
                     setParamNames(Object.fromEntries(parsedEntries));
@@ -272,7 +308,6 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
                 catch (error) {
                     if (!cancelled) {
                         setParamNames({});
-                        setScore(0);
                         setInsights([]);
                         setAnalysisMetrics(null);
                         setWasmError(error instanceof Error ? error.message : "Route X-Ray WASM failed to load or run.");
@@ -319,7 +354,7 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
                                             highlight(routeId, path);
                                         }
                                     }, children: [_jsxs("span", { children: ["\u25CF ", path, paramsText, dynamicNames ? ` (${dynamicNames})` : ""] }), _jsxs("span", { children: [component, lazy ? _jsx("span", { className: "xray-badge", children: "L" }) : null, hasBoundary ? _jsx("span", { className: "xray-badge", children: "\u2713" }) : null] })] }, routeId));
-                            })] }), _jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "PARAMS" }), Object.keys(activeParams).length === 0 ? (_jsx("div", { children: "None" })) : (_jsx("div", { children: Object.entries(activeParams).map(([key, value]) => (_jsxs(Fragment, { children: [key, " = \"", String(value), "\" "] }, key))) }))] }), _jsxs("section", { className: "xray-section xray-status", children: [_jsx("span", { children: "LOADER STATUS" }), _jsx("span", { children: "\u25CF idle" })] }), _jsx("section", { className: "xray-section xray-legend", children: _jsxs("details", { children: [_jsx("summary", { children: "How this SCORE works" }), _jsxs("div", { className: "xray-legend-body", children: [_jsxs("p", { children: ["The overlay sends your ", _jsx("strong", { children: "matched pathnames" }), " (one line per route in the active chain) to the same heuristic shape as the Rust CLI\u2014not your whole repo and not runtime FPS."] }), _jsx("p", { children: _jsx("strong", { className: "xray-code", children: "score = min(100, max(0, maxDepth\u00D73 + dynamicParams\u00D72 + wildcards\u00D74 + eagerPaths))" }) }), _jsxs("p", { children: [_jsx("strong", { children: "maxDepth" }), " is the deepest segment count among those lines; ", _jsx("strong", { children: "dynamicParams" }), " counts", _jsx("span", { className: "xray-code", children: " :segment " }), " tokens; ", _jsx("strong", { children: "wildcards" }), " counts ", _jsx("span", { className: "xray-code", children: "*" }), ";", " ", _jsx("strong", { children: "eagerPaths" }), " is how many lines were analyzed (lazy/error metadata is unknown here, so each line is treated like an eager route row\u2014same convention as the analyzer when lazy flags are missing)."] }), _jsx("p", { children: "Higher scores mean heavier URL structure on paper; pair with the CLI + full route tree for CI-grade findings." })] })] }) }), _jsxs("section", { className: "xray-section xray-status", children: [_jsxs("div", { children: [_jsx("span", { children: "SCORE" }), _jsx("div", { className: "xray-metrics", "aria-label": "Score inputs", children: analysisMetrics ? (_jsxs(_Fragment, { children: ["depth ", analysisMetrics.maxPathDepth, " \u00B7 :params ", analysisMetrics.dynamicParamsTotal, " \u00B7 *", " ", analysisMetrics.wildcardsTotal, " \u00B7 paths ", analysisMetrics.routePathsAnalyzed] })) : ("…") })] }), _jsxs("span", { children: [Math.round(score), "/100 ", score > 60 ? "⚠" : "✓"] })] }), insights.length > 0 ? (_jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "INSIGHTS" }), insights.map((line, index) => (_jsx("div", { className: "xray-insight", children: line }, `${index}-${line.slice(0, 80)}`)))] })) : null] })) : null] }));
+                            })] }), _jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "STRUCTURAL CLARITY" }), _jsx("div", { className: "xray-clarity-card", children: analysisMetrics ? (_jsxs(_Fragment, { children: [_jsxs("div", { className: "xray-clarity-hero", children: [_jsxs("div", { className: "xray-clarity-scoreblock", "aria-label": "Structural clarity score", children: [_jsx("span", { className: "xray-clarity-num", children: Math.round(analysisMetrics.clarityScore) }), _jsx("span", { className: "xray-clarity-denom", children: "/ 100" })] }), _jsx(ClarityTierBadge, { tier: analysisMetrics.tier })] }), _jsx("p", { className: "xray-clarity-headline", children: analysisMetrics.headline }), _jsxs("p", { className: "xray-clarity-sub", children: ["pathname-only heuristic for this matched chain\u2014higher means fewer structural penalties from nesting, breadth, ", _jsx("span", { className: "xray-code", children: ":params" }), ", and ", _jsx("span", { className: "xray-code", children: "*" }), ". Not Lighthouse, FPS, or bundle size."] }), analysisMetrics.routePathsAnalyzed > 0 ? (_jsxs("table", { className: "xray-breakdown", children: [_jsx("thead", { children: _jsxs("tr", { children: [_jsx("th", { scope: "col", children: "What changed the score" }), _jsx("th", { scope: "col", className: "xray-breakdown-ptshead", children: "Points off" })] }) }), _jsxs("tbody", { children: [analysisMetrics.contributors.map((c) => (_jsxs("tr", { children: [_jsxs("td", { children: [_jsx("div", { className: "xray-breakdown-label", children: c.label }), _jsx("div", { className: "xray-breakdown-detail", children: c.detail })] }), _jsx("td", { className: "xray-breakdown-pts", children: c.penaltyPoints })] }, c.id))), _jsxs("tr", { className: "xray-breakdown-total", children: [_jsx("td", { children: "Total penalty (capped)" }), _jsx("td", { className: "xray-breakdown-pts", children: analysisMetrics.structuralPenalty })] })] })] })) : null, _jsxs("details", { className: "xray-legend xray-legend-nested", children: [_jsx("summary", { children: "How this score is calculated" }), _jsxs("div", { className: "xray-legend-body", children: [_jsxs("p", { children: ["Start from ", _jsx("strong", { children: "100" }), ". Each factor below adds penalty points; we cap total penalty so the score stays meaningful on extreme URLs."] }), _jsxs("p", { children: [_jsx("strong", { children: "Matched chain:" }), " +5 for each pathname row after the first (more layouts in this chain)."] }), _jsxs("p", { children: [_jsx("strong", { children: "URL depth:" }), " +10 for each segment beyond depth 1 on the deepest pathname row."] }), _jsxs("p", { children: [_jsx("strong", { children: "Dynamic segments:" }), " +8 each (", _jsx("span", { className: "xray-code", children: ":id" }), "-style tokens)."] }), _jsxs("p", { children: [_jsx("strong", { children: "Wildcards:" }), " +15 each (", _jsx("span", { className: "xray-code", children: "*" }), ")."] }), _jsx("p", { children: "The Rust CLI scores your full route manifest (patterns, lazy flags, etc.)\u2014expect different numbers there; use both together when tuning CI." })] })] })] })) : (_jsx("div", { className: "xray-clarity-loading", children: "Computing structural clarity\u2026" })) })] }), _jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "PARAMS" }), Object.keys(activeParams).length === 0 ? (_jsx("div", { children: "None" })) : (_jsx("div", { children: Object.entries(activeParams).map(([key, value]) => (_jsxs(Fragment, { children: [key, " = \"", String(value), "\" "] }, key))) }))] }), _jsxs("section", { className: "xray-section xray-status", children: [_jsx("span", { children: "LOADER STATUS" }), _jsx("span", { children: "\u25CF idle" })] }), insights.length > 0 ? (_jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "INSIGHTS" }), insights.map((line, index) => (_jsx("div", { className: "xray-insight", children: line }, `${index}-${line.slice(0, 80)}`)))] })) : null] })) : null] }));
     return renderInBody(panel);
 }
 function RouteXrayDataOverlay(props) {

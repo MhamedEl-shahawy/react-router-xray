@@ -14,6 +14,37 @@ vi.mock("react-router-xray-core/wasm", () => ({
       maxPathDepth: 3,
       dynamicParamsTotal: 1,
       wildcardsTotal: 0,
+      clarityScore: 72,
+      structuralPenalty: 28,
+      tier: "moderate" as const,
+      headline:
+        "Some structural weight from segment depth, params, or layout breadth—still healthy for many apps.",
+      contributors: [
+        {
+          id: "chain",
+          label: "Matched chain",
+          penaltyPoints: 10,
+          detail: "3 pathname rows (layouts + leaf). Each extra row adds +5 points—more ancestors mean more boundaries and context switching.",
+        },
+        {
+          id: "depth",
+          label: "URL segment depth",
+          penaltyPoints: 10,
+          detail: "Deepest pathname uses 3 segment(s). Beyond depth 1 adds +10 per extra segment.",
+        },
+        {
+          id: "dynamic",
+          label: "Dynamic params (:id)",
+          penaltyPoints: 8,
+          detail: "1 dynamic segment(s); each adds +8—ensure loaders validate input.",
+        },
+        {
+          id: "wildcard",
+          label: "Wildcards (*)",
+          penaltyPoints: 0,
+          detail: "No wildcard markers.",
+        },
+      ],
     },
   })),
   parsePattern: vi.fn(async (pattern: string) => ({
@@ -70,13 +101,16 @@ function renderApp(initial = "/users/42") {
 }
 
 describe("RouteXrayOverlay", () => {
-  it("renders active chain and score after opening", async () => {
+  it("renders active chain and clarity score after opening", async () => {
     renderApp();
     expect(screen.queryByTestId("xray-overlay")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /open route x-ray/i }));
     await waitFor(() => expect(screen.getByTestId("xray-overlay")).toBeInTheDocument());
     expect(screen.getByText("ACTIVE CHAIN")).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText(/72\/100/)).toBeInTheDocument());
+    expect(screen.getByText("STRUCTURAL CLARITY")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByLabelText(/structural clarity score/i)).toHaveTextContent(/72/)
+    );
   });
 
   it("toggles with Alt+R and closes with Escape", async () => {

@@ -24,9 +24,10 @@ type OverlayMatch = {
   handle?: unknown;
 };
 
-/** Score + path-derived insights from `analyzeRoutes` (matches mirror router state). */
+/** Clarity score + path-derived insights from `analyzeRoutes` (matches mirror router state). */
 export type RouteXrayState = {
   matches: OverlayMatch[];
+  /** 0–100 structural clarity for this navigation pathnames chain (higher = simpler path surface). */
   score: number;
   insights: string[];
   metrics: AnalysisMetrics | null;
@@ -92,14 +93,53 @@ function injectStyles() {
   .xray-legend-body{padding-top:6px;color:#cbd5e1;font-size:11px;line-height:1.45}
   .xray-legend-body p{margin:0 0 8px}
   .xray-code{font-family:ui-monospace,monospace;font-size:10px;color:#e2e8f0}
-  .xray-metrics{font-size:10px;color:#94a3b8;line-height:1.35;margin-top:4px}
   .xray-insight{padding:4px 0;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:11px;line-height:1.35}
   .xray-insight:last-child{border-bottom:none}
+  .xray-clarity-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+  .xray-clarity-scoreblock{display:flex;align-items:baseline;gap:4px}
+  .xray-clarity-num{font-size:26px;font-weight:700;line-height:1;color:#f8fafc;letter-spacing:-0.02em}
+  .xray-clarity-denom{font-size:12px;color:#94a3b8;font-weight:600}
+  .xray-tier{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid transparent;white-space:nowrap;line-height:1.2}
+  .xray-tier-minimal{border-color:#15803d;color:#bbf7d0;background:rgba(22,163,74,.18)}
+  .xray-tier-moderate{border-color:#2563eb;color:#bfdbfe;background:rgba(37,99,235,.2)}
+  .xray-tier-noticeable{border-color:#ca8a04;color:#fef08a;background:rgba(234,179,8,.18)}
+  .xray-tier-heavy{border-color:#b91c1c;color:#fecaca;background:rgba(220,38,38,.18)}
+  .xray-clarity-headline{margin:6px 0 4px;color:#e2e8f0;font-size:12px;line-height:1.45;font-weight:600}
+  .xray-clarity-sub{margin:0 0 10px;color:#94a3b8;font-size:10px;line-height:1.45}
+  .xray-clarity-loading{color:#94a3b8;font-size:11px}
+  .xray-breakdown{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:11px}
+  .xray-breakdown th{color:#94a3b8;text-align:left;font-weight:700;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 0;border-bottom:1px solid #334155}
+  .xray-breakdown-ptshead{text-align:right}
+  .xray-breakdown td{padding:6px 0;border-bottom:1px solid #1e293b;vertical-align:top}
+  .xray-breakdown-label{font-weight:600;color:#e2e8f0}
+  .xray-breakdown-detail{margin-top:3px;color:#94a3b8;font-size:10px;line-height:1.35}
+  .xray-breakdown-pts{text-align:right;font-variant-numeric:tabular-nums;color:#fecaca;font-weight:600}
+  .xray-breakdown-total td{padding-top:8px;border-bottom:none;color:#cbd5e1;font-weight:700}
+  .xray-breakdown-total .xray-breakdown-pts{color:#fda4af}
+  .xray-legend-nested{margin-top:8px}
   [data-xray-hovered="true"]{outline:2px solid #6366f1;position:relative}
   [data-xray-hovered="true"]::before{content:attr(data-xray-label);position:absolute;top:-24px;left:0;background:#312e81;color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;white-space:nowrap;z-index:2147483647}
   `;
   document.head.appendChild(style);
   styleInjected = true;
+}
+
+function tierPresentation(tier: AnalysisMetrics["tier"]): { className: string; label: string } {
+  switch (tier) {
+    case "minimal":
+      return { className: "xray-tier xray-tier-minimal", label: "Minimal load" };
+    case "moderate":
+      return { className: "xray-tier xray-tier-moderate", label: "Moderate load" };
+    case "noticeable":
+      return { className: "xray-tier xray-tier-noticeable", label: "Noticeable load" };
+    default:
+      return { className: "xray-tier xray-tier-heavy", label: "Heavy load" };
+  }
+}
+
+function ClarityTierBadge({ tier }: { tier: AnalysisMetrics["tier"] }) {
+  const { className, label } = tierPresentation(tier);
+  return <span className={className}>{label}</span>;
 }
 
 function renderInBody(node: ReactNode) {
@@ -179,7 +219,9 @@ export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXray
           const mod = await ensureWasm();
           const result = await mod.analyzeRoutes(routeLines);
           if (cancelled) return;
-          setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
+          const clarity =
+            Number(result.metrics?.clarityScore ?? result.score) || 0;
+          setScore(Math.max(0, Math.min(100, clarity)));
           setInsights(Array.isArray(result.insights) ? result.insights : []);
           setMetrics(result.metrics ?? null);
         } catch {
@@ -293,7 +335,6 @@ function OverlayInner({
   const { isOpen, setIsOpen, toggle } = useLocalOpenState(defaultOpen);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [wasmError, setWasmError] = useState<string | null>(null);
-  const [score, setScore] = useState(0);
   const [insights, setInsights] = useState<string[]>([]);
   const [analysisMetrics, setAnalysisMetrics] = useState<AnalysisMetrics | null>(null);
   const [paramNames, setParamNames] = useState<Record<string, string[]>>({});
@@ -327,7 +368,6 @@ function OverlayInner({
             )
           ]);
           if (cancelled) return;
-          setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
           setInsights(Array.isArray(result.insights) ? result.insights : []);
           setAnalysisMetrics(result.metrics ?? null);
           setParamNames(Object.fromEntries(parsedEntries));
@@ -335,7 +375,6 @@ function OverlayInner({
         } catch (error: unknown) {
           if (!cancelled) {
             setParamNames({});
-            setScore(0);
             setInsights([]);
             setAnalysisMetrics(null);
             setWasmError(
@@ -464,6 +503,83 @@ function OverlayInner({
           </section>
 
           <section className="xray-section">
+            <div className="xray-title">STRUCTURAL CLARITY</div>
+            <div className="xray-clarity-card">
+              {analysisMetrics ? (
+                <>
+                  <div className="xray-clarity-hero">
+                    <div className="xray-clarity-scoreblock" aria-label="Structural clarity score">
+                      <span className="xray-clarity-num">{Math.round(analysisMetrics.clarityScore)}</span>
+                      <span className="xray-clarity-denom">/ 100</span>
+                    </div>
+                    <ClarityTierBadge tier={analysisMetrics.tier} />
+                  </div>
+                  <p className="xray-clarity-headline">{analysisMetrics.headline}</p>
+                  <p className="xray-clarity-sub">
+                    pathname-only heuristic for this matched chain—higher means fewer structural penalties from nesting,
+                    breadth, <span className="xray-code">:params</span>, and <span className="xray-code">*</span>. Not
+                    Lighthouse, FPS, or bundle size.
+                  </p>
+                  {analysisMetrics.routePathsAnalyzed > 0 ? (
+                    <table className="xray-breakdown">
+                      <thead>
+                        <tr>
+                          <th scope="col">What changed the score</th>
+                          <th scope="col" className="xray-breakdown-ptshead">
+                            Points off
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analysisMetrics.contributors.map((c) => (
+                          <tr key={c.id}>
+                            <td>
+                              <div className="xray-breakdown-label">{c.label}</div>
+                              <div className="xray-breakdown-detail">{c.detail}</div>
+                            </td>
+                            <td className="xray-breakdown-pts">{c.penaltyPoints}</td>
+                          </tr>
+                        ))}
+                        <tr className="xray-breakdown-total">
+                          <td>Total penalty (capped)</td>
+                          <td className="xray-breakdown-pts">{analysisMetrics.structuralPenalty}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  ) : null}
+                  <details className="xray-legend xray-legend-nested">
+                    <summary>How this score is calculated</summary>
+                    <div className="xray-legend-body">
+                      <p>
+                        Start from <strong>100</strong>. Each factor below adds penalty points; we cap total penalty so the
+                        score stays meaningful on extreme URLs.
+                      </p>
+                      <p>
+                        <strong>Matched chain:</strong> +5 for each pathname row after the first (more layouts in this chain).
+                      </p>
+                      <p>
+                        <strong>URL depth:</strong> +10 for each segment beyond depth 1 on the deepest pathname row.
+                      </p>
+                      <p>
+                        <strong>Dynamic segments:</strong> +8 each (<span className="xray-code">:id</span>-style tokens).
+                      </p>
+                      <p>
+                        <strong>Wildcards:</strong> +15 each (<span className="xray-code">*</span>).
+                      </p>
+                      <p>
+                        The Rust CLI scores your full route manifest (patterns, lazy flags, etc.)—expect different numbers
+                        there; use both together when tuning CI.
+                      </p>
+                    </div>
+                  </details>
+                </>
+              ) : (
+                <div className="xray-clarity-loading">Computing structural clarity…</div>
+              )}
+            </div>
+          </section>
+
+          <section className="xray-section">
             <div className="xray-title">PARAMS</div>
             {Object.keys(activeParams).length === 0 ? (
               <div>None</div>
@@ -479,46 +595,6 @@ function OverlayInner({
           <section className="xray-section xray-status">
             <span>LOADER STATUS</span>
             <span>● idle</span>
-          </section>
-
-          <section className="xray-section xray-legend">
-            <details>
-              <summary>How this SCORE works</summary>
-              <div className="xray-legend-body">
-                <p>
-                  The overlay sends your <strong>matched pathnames</strong> (one line per route in the active chain) to the same
-                  heuristic shape as the Rust CLI—not your whole repo and not runtime FPS.
-                </p>
-                <p>
-                  <strong className="xray-code">
-                    score = min(100, max(0, maxDepth×3 + dynamicParams×2 + wildcards×4 + eagerPaths))
-                  </strong>
-                </p>
-                <p>
-                  <strong>maxDepth</strong> is the deepest segment count among those lines; <strong>dynamicParams</strong> counts
-                  <span className="xray-code"> :segment </span> tokens; <strong>wildcards</strong> counts <span className="xray-code">*</span>;{" "}
-                  <strong>eagerPaths</strong> is how many lines were analyzed (lazy/error metadata is unknown here, so each line is treated like an eager route row—same convention as the analyzer when lazy flags are missing).
-                </p>
-                <p>Higher scores mean heavier URL structure on paper; pair with the CLI + full route tree for CI-grade findings.</p>
-              </div>
-            </details>
-          </section>
-
-          <section className="xray-section xray-status">
-            <div>
-              <span>SCORE</span>
-              <div className="xray-metrics" aria-label="Score inputs">
-                {analysisMetrics ? (
-                  <>
-                    depth {analysisMetrics.maxPathDepth} · :params {analysisMetrics.dynamicParamsTotal} · *{" "}
-                    {analysisMetrics.wildcardsTotal} · paths {analysisMetrics.routePathsAnalyzed}
-                  </>
-                ) : (
-                  "…"
-                )}
-              </div>
-            </div>
-            <span>{Math.round(score)}/100 {score > 60 ? "⚠" : "✓"}</span>
           </section>
 
           {insights.length > 0 ? (
