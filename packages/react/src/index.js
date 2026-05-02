@@ -46,6 +46,14 @@ function injectStyles() {
   .xray-badge{display:inline-block;padding:0 4px;border-radius:4px;border:1px solid #475569;font-size:10px;margin-left:4px}
   .xray-status{display:flex;justify-content:space-between}
   .xray-error{background:#450a0a;color:#fecaca;padding:8px 12px;font-size:11px;border-bottom:1px solid #7f1d1d}
+  .xray-legend summary{cursor:pointer;font-size:10px;color:#94a3b8;letter-spacing:.08em;list-style:none}
+  .xray-legend summary::-webkit-details-marker{display:none}
+  .xray-legend-body{padding-top:6px;color:#cbd5e1;font-size:11px;line-height:1.45}
+  .xray-legend-body p{margin:0 0 8px}
+  .xray-code{font-family:ui-monospace,monospace;font-size:10px;color:#e2e8f0}
+  .xray-metrics{font-size:10px;color:#94a3b8;line-height:1.35;margin-top:4px}
+  .xray-insight{padding:4px 0;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:11px;line-height:1.35}
+  .xray-insight:last-child{border-bottom:none}
   [data-xray-hovered="true"]{outline:2px solid #6366f1;position:relative}
   [data-xray-hovered="true"]::before{content:attr(data-xray-label);position:absolute;top:-24px;left:0;background:#312e81;color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;white-space:nowrap;z-index:2147483647}
   `;
@@ -103,7 +111,8 @@ function analysisRouteKey(matches) {
 }
 export function useRouteXray(matches, enabled = true) {
     const [score, setScore] = useState(0);
-    const [issues, setIssues] = useState([]);
+    const [insights, setInsights] = useState([]);
+    const [metrics, setMetrics] = useState(null);
     const routeLines = useMemo(() => matches.map((match) => (match.pathname || "/").trim()).join("\n"), [matches]);
     useEffect(() => {
         injectStyles();
@@ -120,14 +129,14 @@ export function useRouteXray(matches, enabled = true) {
                     if (cancelled)
                         return;
                     setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
-                    setIssues(result.score > 70
-                        ? ["Complexity above recommended threshold"]
-                        : []);
+                    setInsights(Array.isArray(result.insights) ? result.insights : []);
+                    setMetrics(result.metrics ?? null);
                 }
                 catch {
                     if (!cancelled) {
                         setScore(0);
-                        setIssues([]);
+                        setInsights([]);
+                        setMetrics(null);
                     }
                 }
             })();
@@ -137,7 +146,7 @@ export function useRouteXray(matches, enabled = true) {
             cancel();
         };
     }, [enabled, routeLines]);
-    return { matches, score, issues };
+    return { matches, score, insights, metrics };
 }
 export function XrayBoundary({ routeId, children }) {
     return (_jsx("div", { "data-xray-route-id": routeId, children: children }));
@@ -224,7 +233,8 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [wasmError, setWasmError] = useState(null);
     const [score, setScore] = useState(0);
-    const [issues, setIssues] = useState([]);
+    const [insights, setInsights] = useState([]);
+    const [analysisMetrics, setAnalysisMetrics] = useState(null);
     const [paramNames, setParamNames] = useState({});
     const { highlight, clear } = useHoverInstrumentation();
     const routeAnalysisKey = useMemo(() => analysisRouteKey(matches), [matches]);
@@ -254,7 +264,8 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
                     if (cancelled)
                         return;
                     setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
-                    setIssues(result.score > 70 ? ["Complexity above recommended threshold"] : []);
+                    setInsights(Array.isArray(result.insights) ? result.insights : []);
+                    setAnalysisMetrics(result.metrics ?? null);
                     setParamNames(Object.fromEntries(parsedEntries));
                     setWasmError(null);
                 }
@@ -262,7 +273,8 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
                     if (!cancelled) {
                         setParamNames({});
                         setScore(0);
-                        setIssues([]);
+                        setInsights([]);
+                        setAnalysisMetrics(null);
                         setWasmError(error instanceof Error ? error.message : "Route X-Ray WASM failed to load or run.");
                     }
                 }
@@ -307,7 +319,7 @@ function OverlayInner({ matches, defaultOpen = false, showLauncherWhenClosed = t
                                             highlight(routeId, path);
                                         }
                                     }, children: [_jsxs("span", { children: ["\u25CF ", path, paramsText, dynamicNames ? ` (${dynamicNames})` : ""] }), _jsxs("span", { children: [component, lazy ? _jsx("span", { className: "xray-badge", children: "L" }) : null, hasBoundary ? _jsx("span", { className: "xray-badge", children: "\u2713" }) : null] })] }, routeId));
-                            })] }), _jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "PARAMS" }), Object.keys(activeParams).length === 0 ? (_jsx("div", { children: "None" })) : (_jsx("div", { children: Object.entries(activeParams).map(([key, value]) => (_jsxs(Fragment, { children: [key, " = \"", String(value), "\" "] }, key))) }))] }), _jsxs("section", { className: "xray-section xray-status", children: [_jsx("span", { children: "LOADER STATUS" }), _jsx("span", { children: "\u25CF idle" })] }), _jsxs("section", { className: "xray-section xray-status", children: [_jsx("span", { children: "SCORE" }), _jsxs("span", { children: [Math.round(score), "/100 ", score > 60 ? "⚠" : "✓"] })] }), issues.length > 0 ? (_jsx("section", { className: "xray-section", children: issues.map((issue) => _jsxs("div", { children: ["\u26A0 ", issue] }, issue)) })) : null] })) : null] }));
+                            })] }), _jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "PARAMS" }), Object.keys(activeParams).length === 0 ? (_jsx("div", { children: "None" })) : (_jsx("div", { children: Object.entries(activeParams).map(([key, value]) => (_jsxs(Fragment, { children: [key, " = \"", String(value), "\" "] }, key))) }))] }), _jsxs("section", { className: "xray-section xray-status", children: [_jsx("span", { children: "LOADER STATUS" }), _jsx("span", { children: "\u25CF idle" })] }), _jsx("section", { className: "xray-section xray-legend", children: _jsxs("details", { children: [_jsx("summary", { children: "How this SCORE works" }), _jsxs("div", { className: "xray-legend-body", children: [_jsxs("p", { children: ["The overlay sends your ", _jsx("strong", { children: "matched pathnames" }), " (one line per route in the active chain) to the same heuristic shape as the Rust CLI\u2014not your whole repo and not runtime FPS."] }), _jsx("p", { children: _jsx("strong", { className: "xray-code", children: "score = min(100, max(0, maxDepth\u00D73 + dynamicParams\u00D72 + wildcards\u00D74 + eagerPaths))" }) }), _jsxs("p", { children: [_jsx("strong", { children: "maxDepth" }), " is the deepest segment count among those lines; ", _jsx("strong", { children: "dynamicParams" }), " counts", _jsx("span", { className: "xray-code", children: " :segment " }), " tokens; ", _jsx("strong", { children: "wildcards" }), " counts ", _jsx("span", { className: "xray-code", children: "*" }), ";", " ", _jsx("strong", { children: "eagerPaths" }), " is how many lines were analyzed (lazy/error metadata is unknown here, so each line is treated like an eager route row\u2014same convention as the analyzer when lazy flags are missing)."] }), _jsx("p", { children: "Higher scores mean heavier URL structure on paper; pair with the CLI + full route tree for CI-grade findings." })] })] }) }), _jsxs("section", { className: "xray-section xray-status", children: [_jsxs("div", { children: [_jsx("span", { children: "SCORE" }), _jsx("div", { className: "xray-metrics", "aria-label": "Score inputs", children: analysisMetrics ? (_jsxs(_Fragment, { children: ["depth ", analysisMetrics.maxPathDepth, " \u00B7 :params ", analysisMetrics.dynamicParamsTotal, " \u00B7 *", " ", analysisMetrics.wildcardsTotal, " \u00B7 paths ", analysisMetrics.routePathsAnalyzed] })) : ("…") })] }), _jsxs("span", { children: [Math.round(score), "/100 ", score > 60 ? "⚠" : "✓"] })] }), insights.length > 0 ? (_jsxs("section", { className: "xray-section", children: [_jsx("div", { className: "xray-title", children: "INSIGHTS" }), insights.map((line, index) => (_jsx("div", { className: "xray-insight", children: line }, `${index}-${line.slice(0, 80)}`)))] })) : null] })) : null] }));
     return renderInBody(panel);
 }
 function RouteXrayDataOverlay(props) {

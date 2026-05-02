@@ -5,7 +5,17 @@ import { RouteXrayOverlay, XrayBoundary } from "./index";
 
 vi.mock("react-router-xray-core/wasm", () => ({
   init: vi.fn(async () => undefined),
-  analyzeRoutes: vi.fn(async () => ({ score: 72, routes: ["/", "/users", "/users/:id"] })),
+  analyzeRoutes: vi.fn(async () => ({
+    score: 72,
+    routes: ["/", "/users", "/users/:id"],
+    insights: ["Mock: replace with real analyzeRoutes in integration tests."],
+    metrics: {
+      routePathsAnalyzed: 3,
+      maxPathDepth: 3,
+      dynamicParamsTotal: 1,
+      wildcardsTotal: 0,
+    },
+  })),
   parsePattern: vi.fn(async (pattern: string) => ({
     raw: pattern,
     segments: pattern.split("/").filter(Boolean),

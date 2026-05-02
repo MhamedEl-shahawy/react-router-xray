@@ -1,3 +1,4 @@
+import type { AnalysisMetrics } from "react-router-xray-core/wasm";
 import {
   Component,
   Fragment,
@@ -23,11 +24,12 @@ type OverlayMatch = {
   handle?: unknown;
 };
 
-/** Score/issues from WASM analysis (matches mirror router state). */
+/** Score + path-derived insights from `analyzeRoutes` (matches mirror router state). */
 export type RouteXrayState = {
   matches: OverlayMatch[];
   score: number;
-  issues: string[];
+  insights: string[];
+  metrics: AnalysisMetrics | null;
 };
 
 export type RouteXrayOverlayProps = {
@@ -85,6 +87,14 @@ function injectStyles() {
   .xray-badge{display:inline-block;padding:0 4px;border-radius:4px;border:1px solid #475569;font-size:10px;margin-left:4px}
   .xray-status{display:flex;justify-content:space-between}
   .xray-error{background:#450a0a;color:#fecaca;padding:8px 12px;font-size:11px;border-bottom:1px solid #7f1d1d}
+  .xray-legend summary{cursor:pointer;font-size:10px;color:#94a3b8;letter-spacing:.08em;list-style:none}
+  .xray-legend summary::-webkit-details-marker{display:none}
+  .xray-legend-body{padding-top:6px;color:#cbd5e1;font-size:11px;line-height:1.45}
+  .xray-legend-body p{margin:0 0 8px}
+  .xray-code{font-family:ui-monospace,monospace;font-size:10px;color:#e2e8f0}
+  .xray-metrics{font-size:10px;color:#94a3b8;line-height:1.35;margin-top:4px}
+  .xray-insight{padding:4px 0;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:11px;line-height:1.35}
+  .xray-insight:last-child{border-bottom:none}
   [data-xray-hovered="true"]{outline:2px solid #6366f1;position:relative}
   [data-xray-hovered="true"]::before{content:attr(data-xray-label);position:absolute;top:-24px;left:0;background:#312e81;color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;white-space:nowrap;z-index:2147483647}
   `;
@@ -148,7 +158,8 @@ function analysisRouteKey(matches: OverlayMatch[]): string {
 
 export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXrayState {
   const [score, setScore] = useState(0);
-  const [issues, setIssues] = useState<string[]>([]);
+  const [insights, setInsights] = useState<string[]>([]);
+  const [metrics, setMetrics] = useState<AnalysisMetrics | null>(null);
 
   const routeLines = useMemo(
     () => matches.map((match) => (match.pathname || "/").trim()).join("\n"),
@@ -169,15 +180,13 @@ export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXray
           const result = await mod.analyzeRoutes(routeLines);
           if (cancelled) return;
           setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
-          setIssues(
-            result.score > 70
-              ? ["Complexity above recommended threshold"]
-              : []
-          );
+          setInsights(Array.isArray(result.insights) ? result.insights : []);
+          setMetrics(result.metrics ?? null);
         } catch {
           if (!cancelled) {
             setScore(0);
-            setIssues([]);
+            setInsights([]);
+            setMetrics(null);
           }
         }
       })();
@@ -188,7 +197,7 @@ export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXray
     };
   }, [enabled, routeLines]);
 
-  return { matches, score, issues };
+  return { matches, score, insights, metrics };
 }
 
 export function XrayBoundary({ routeId, children }: PropsWithChildren<{ routeId: string }>) {
@@ -285,7 +294,8 @@ function OverlayInner({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [wasmError, setWasmError] = useState<string | null>(null);
   const [score, setScore] = useState(0);
-  const [issues, setIssues] = useState<string[]>([]);
+  const [insights, setInsights] = useState<string[]>([]);
+  const [analysisMetrics, setAnalysisMetrics] = useState<AnalysisMetrics | null>(null);
   const [paramNames, setParamNames] = useState<Record<string, string[]>>({});
   const { highlight, clear } = useHoverInstrumentation();
 
@@ -318,16 +328,16 @@ function OverlayInner({
           ]);
           if (cancelled) return;
           setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
-          setIssues(
-            result.score > 70 ? ["Complexity above recommended threshold"] : []
-          );
+          setInsights(Array.isArray(result.insights) ? result.insights : []);
+          setAnalysisMetrics(result.metrics ?? null);
           setParamNames(Object.fromEntries(parsedEntries));
           setWasmError(null);
         } catch (error: unknown) {
           if (!cancelled) {
             setParamNames({});
             setScore(0);
-            setIssues([]);
+            setInsights([]);
+            setAnalysisMetrics(null);
             setWasmError(
               error instanceof Error ? error.message : "Route X-Ray WASM failed to load or run."
             );
@@ -470,13 +480,55 @@ function OverlayInner({
             <span>LOADER STATUS</span>
             <span>● idle</span>
           </section>
+
+          <section className="xray-section xray-legend">
+            <details>
+              <summary>How this SCORE works</summary>
+              <div className="xray-legend-body">
+                <p>
+                  The overlay sends your <strong>matched pathnames</strong> (one line per route in the active chain) to the same
+                  heuristic shape as the Rust CLI—not your whole repo and not runtime FPS.
+                </p>
+                <p>
+                  <strong className="xray-code">
+                    score = min(100, max(0, maxDepth×3 + dynamicParams×2 + wildcards×4 + eagerPaths))
+                  </strong>
+                </p>
+                <p>
+                  <strong>maxDepth</strong> is the deepest segment count among those lines; <strong>dynamicParams</strong> counts
+                  <span className="xray-code"> :segment </span> tokens; <strong>wildcards</strong> counts <span className="xray-code">*</span>;{" "}
+                  <strong>eagerPaths</strong> is how many lines were analyzed (lazy/error metadata is unknown here, so each line is treated like an eager route row—same convention as the analyzer when lazy flags are missing).
+                </p>
+                <p>Higher scores mean heavier URL structure on paper; pair with the CLI + full route tree for CI-grade findings.</p>
+              </div>
+            </details>
+          </section>
+
           <section className="xray-section xray-status">
-            <span>SCORE</span>
+            <div>
+              <span>SCORE</span>
+              <div className="xray-metrics" aria-label="Score inputs">
+                {analysisMetrics ? (
+                  <>
+                    depth {analysisMetrics.maxPathDepth} · :params {analysisMetrics.dynamicParamsTotal} · *{" "}
+                    {analysisMetrics.wildcardsTotal} · paths {analysisMetrics.routePathsAnalyzed}
+                  </>
+                ) : (
+                  "…"
+                )}
+              </div>
+            </div>
             <span>{Math.round(score)}/100 {score > 60 ? "⚠" : "✓"}</span>
           </section>
-          {issues.length > 0 ? (
+
+          {insights.length > 0 ? (
             <section className="xray-section">
-              {issues.map((issue) => <div key={issue}>⚠ {issue}</div>)}
+              <div className="xray-title">INSIGHTS</div>
+              {insights.map((line, index) => (
+                <div key={`${index}-${line.slice(0, 80)}`} className="xray-insight">
+                  {line}
+                </div>
+              ))}
             </section>
           ) : null}
         </>

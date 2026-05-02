@@ -47,7 +47,7 @@ const RouteXrayOverlay = lazy(() =>
 
 - `RouteXrayOverlay`
 - `XrayBoundary`
-- `useRouteXray` — returns `{ matches, score, issues }` when `enabled` is true (WASM runs only while enabled)
+- `useRouteXray` — returns `{ matches, score, insights, metrics }` when `enabled` is true (`insights`/`metrics` come from `analyzeRoutes` on matched paths)
 
 ## License
 
