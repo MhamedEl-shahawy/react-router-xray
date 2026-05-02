@@ -1,14 +1,20 @@
 import {
+  Component,
   Fragment,
   type PropsWithChildren,
+  type ReactNode,
   useEffect,
+  useMemo,
+  useRef,
   useState
 } from "react";
+import { createPortal } from "react-dom";
 import {
   useLocation,
   useMatches
 } from "react-router-dom";
-import * as wasm from "react-router-xray-core/wasm";
+
+type WasmApi = typeof import("react-router-xray-core/wasm");
 
 type OverlayMatch = {
   id: string;
@@ -31,14 +37,28 @@ export type RouteXrayOverlayProps = {
   showLauncherWhenClosed?: boolean;
 };
 
+const XRAY_PANEL_TITLE_ID = "route-xray-panel-title";
+
 let styleInjected = false;
 const XRAY_STYLE_ID = "route-xray-style";
 
+let wasmModuleCache: WasmApi | null = null;
 let wasmInitPromise: Promise<void> | null = null;
 
-async function ensureWasm(): Promise<void> {
-  wasmInitPromise ??= wasm.init();
+async function loadWasmModule(): Promise<WasmApi> {
+  wasmModuleCache ??= await import("react-router-xray-core/wasm");
+  return wasmModuleCache;
+}
+
+/** Loads WASM chunk lazily and initializes once; resets init promise on failure so callers can retry. */
+async function ensureWasm(): Promise<WasmApi> {
+  const mod = await loadWasmModule();
+  wasmInitPromise ??= mod.init().catch((error: unknown) => {
+    wasmInitPromise = null;
+    throw error;
+  });
   await wasmInitPromise;
+  return mod;
 }
 
 function injectStyles() {
@@ -50,23 +70,31 @@ function injectStyles() {
   const style = document.createElement("style");
   style.id = XRAY_STYLE_ID;
   style.textContent = `
-  .xray-root{position:fixed;inset:0;z-index:2147483647;pointer-events:none}
-  .xray-hit{pointer-events:auto}
-  .xray-panel{position:absolute;right:16px;bottom:16px;width:380px;max-width:calc(100vw - 24px);background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:12px;font:12px/1.4 system-ui,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.4);pointer-events:none}
-  .xray-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1e293b;font-weight:700}
-  .xray-controls button{background:transparent;border:0;color:#e2e8f0;cursor:pointer;padding:0 6px}
+  .xray-launcher{position:fixed;right:16px;bottom:16px;z-index:2147483646;border:1px solid #334155;background:#0f172a;color:#e2e8f0;border-radius:9999px;padding:8px 12px;font:12px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 12px 32px rgba(0,0,0,.4);pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .xray-launcher:focus-visible{outline:2px solid #93c5fd;outline-offset:3px}
+  .xray-panel{position:fixed;right:16px;bottom:16px;width:380px;max-width:calc(100vw - 24px);max-height:calc(100vh - 32px);overflow:auto;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:12px;font:12px/1.4 system-ui,sans-serif;z-index:2147483646;box-shadow:0 12px 32px rgba(0,0,0,.4);pointer-events:auto;touch-action:manipulation;contain:content}
+  .xray-panel:focus-within{outline:none}
+  .xray-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1e293b;font-weight:700;position:sticky;top:0;background:#0f172a;z-index:1}
+  .xray-controls button{background:transparent;border:0;color:#e2e8f0;cursor:pointer;padding:0 6px;touch-action:manipulation;border-radius:6px}
+  .xray-controls button:focus-visible{outline:2px solid #93c5fd;outline-offset:2px}
   .xray-section{padding:8px 12px;border-bottom:1px solid #1e293b}
   .xray-title{font-size:10px;color:#94a3b8;letter-spacing:.08em;margin-bottom:4px}
-  .xray-route-row{display:flex;justify-content:space-between;gap:8px;padding:2px 4px;border-radius:6px;cursor:pointer}
+  .xray-route-row{display:flex;justify-content:space-between;gap:8px;padding:2px 4px;border-radius:6px;cursor:pointer;touch-action:manipulation}
+  .xray-route-row:focus-visible{outline:2px solid #93c5fd;outline-offset:1px}
   .xray-route-row:hover{background:#1e293b}
   .xray-badge{display:inline-block;padding:0 4px;border-radius:4px;border:1px solid #475569;font-size:10px;margin-left:4px}
   .xray-status{display:flex;justify-content:space-between}
+  .xray-error{background:#450a0a;color:#fecaca;padding:8px 12px;font-size:11px;border-bottom:1px solid #7f1d1d}
   [data-xray-hovered="true"]{outline:2px solid #6366f1;position:relative}
   [data-xray-hovered="true"]::before{content:attr(data-xray-label);position:absolute;top:-24px;left:0;background:#312e81;color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;white-space:nowrap;z-index:2147483647}
-  .xray-launcher{position:absolute;right:16px;bottom:16px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;border-radius:9999px;padding:8px 10px;font:12px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 12px 32px rgba(0,0,0,.4)}
   `;
   document.head.appendChild(style);
   styleInjected = true;
+}
+
+function renderInBody(node: ReactNode) {
+  if (typeof document === "undefined") return null;
+  return createPortal(node, document.body);
 }
 
 function useLocalOpenState(initialOpen = false) {
@@ -84,32 +112,48 @@ function fallbackMatch(pathname: string): OverlayMatch {
   };
 }
 
-function useOverlayMatches(): OverlayMatch[] {
-  let pathname = "/";
-  try {
-    const location = useLocation();
-    pathname = location.pathname || "/";
-  } catch {
-    pathname = "/";
-  }
-
-  try {
-    const matches = useMatches();
-    if (!matches.length) return [fallbackMatch(pathname)];
-    return matches.map((match) => ({
+/** Stable match list for data routers (reference stable while route unchanged). */
+function useStableDataOverlayMatches(): OverlayMatch[] {
+  const pathname = useLocation().pathname || "/";
+  const rawMatches = useMatches();
+  return useMemo(() => {
+    if (!rawMatches.length) return [fallbackMatch(pathname)];
+    return rawMatches.map((match) => ({
       id: String(match.id ?? match.pathname ?? pathname),
       pathname: match.pathname || pathname,
       params: (match.params ?? {}) as Record<string, string>,
       handle: match.handle
     }));
-  } catch {
-    return [fallbackMatch(pathname)];
+  }, [pathname, rawMatches]);
+}
+
+/** BrowserRouter / non-data-router fallback (location only). */
+function useStableLegacyOverlayMatches(): OverlayMatch[] {
+  const pathname = useLocation().pathname || "/";
+  return useMemo(() => [fallbackMatch(pathname)], [pathname]);
+}
+
+function scheduleIdle(fn: () => void): { cancel: () => void } {
+  if (typeof requestIdleCallback !== "undefined") {
+    const id = requestIdleCallback(fn, { timeout: 600 });
+    return { cancel: () => cancelIdleCallback(id) };
   }
+  const id = window.setTimeout(fn, 0);
+  return { cancel: () => window.clearTimeout(id) };
+}
+
+function analysisRouteKey(matches: OverlayMatch[]): string {
+  return matches.map((m) => `${m.id}:${(m.pathname || "/").trim()}`).join("\n");
 }
 
 export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXrayState {
   const [score, setScore] = useState(0);
   const [issues, setIssues] = useState<string[]>([]);
+
+  const routeLines = useMemo(
+    () => matches.map((match) => (match.pathname || "/").trim()).join("\n"),
+    [matches]
+  );
 
   useEffect(() => {
     injectStyles();
@@ -118,29 +162,31 @@ export function useRouteXray(matches: OverlayMatch[], enabled = true): RouteXray
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
-    const routeLines = matches.map((match) => (match.pathname || "/").trim()).join("\n");
-    (async () => {
-      try {
-        await ensureWasm();
-        const result = await wasm.analyzeRoutes(routeLines);
-        if (cancelled) return;
-        setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
-        setIssues(
-          result.score > 70
-            ? ["Complexity above recommended threshold"]
-            : []
-        );
-      } catch {
-        if (!cancelled) {
-          setScore(0);
-          setIssues([]);
+    const { cancel } = scheduleIdle(() => {
+      void (async () => {
+        try {
+          const mod = await ensureWasm();
+          const result = await mod.analyzeRoutes(routeLines);
+          if (cancelled) return;
+          setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
+          setIssues(
+            result.score > 70
+              ? ["Complexity above recommended threshold"]
+              : []
+          );
+        } catch {
+          if (!cancelled) {
+            setScore(0);
+            setIssues([]);
+          }
         }
-      }
-    })();
+      })();
+    });
     return () => {
       cancelled = true;
+      cancel();
     };
-  }, [enabled, matches]);
+  }, [enabled, routeLines]);
 
   return { matches, score, issues };
 }
@@ -153,20 +199,33 @@ export function XrayBoundary({ routeId, children }: PropsWithChildren<{ routeId:
   );
 }
 
-function useKeyboardShortcuts(toggle: () => void, close: () => void) {
+function eventTargetIsEditable(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (target.isContentEditable) return true;
+  if (target.closest("[contenteditable=\"true\"]")) return true;
+  if (target.closest("[role=\"textbox\"]")) return true;
+  if (target.getAttribute("role") === "combobox") return true;
+  return false;
+}
+
+function useKeyboardShortcuts(isOverlayActive: boolean, toggle: () => void, close: () => void) {
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
+      if (eventTargetIsEditable(event.target)) return;
+
       if ((event.altKey && event.code === "KeyR") || (event.ctrlKey && event.shiftKey && event.code === "KeyX")) {
         event.preventDefault();
         toggle();
       }
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && isOverlayActive) {
         close();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [toggle, close]);
+  }, [toggle, close, isOverlayActive]);
 }
 
 function useHoverInstrumentation() {
@@ -194,151 +253,259 @@ function getMatchPath(match: OverlayMatch): string {
   return match.pathname || "/";
 }
 
+type BoundaryProps = { children: ReactNode; fallback: ReactNode };
+type BoundaryState = { legacy: boolean };
+
+class DataRouterErrorBoundary extends Component<BoundaryProps, BoundaryState> {
+  state: BoundaryState = { legacy: false };
+
+  static getDerivedStateFromError(error: unknown): Partial<BoundaryState> | null {
+    if (!(error instanceof Error)) return null;
+    const msg = error.message;
+    if (!/useMatches/i.test(msg)) return null;
+    if (/data router|RouterProvider|useRoutes\b/i.test(msg)) return { legacy: true };
+    return null;
+  }
+
+  render() {
+    if (this.state.legacy) return this.props.fallback;
+    return this.props.children;
+  }
+}
+
+function OverlayInner({
+  matches,
+  defaultOpen = false,
+  showLauncherWhenClosed = true
+}: RouteXrayOverlayProps & { matches: OverlayMatch[] }) {
+  const matchesRef = useRef(matches);
+  matchesRef.current = matches;
+
+  const { isOpen, setIsOpen, toggle } = useLocalOpenState(defaultOpen);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [wasmError, setWasmError] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+  const [issues, setIssues] = useState<string[]>([]);
+  const [paramNames, setParamNames] = useState<Record<string, string[]>>({});
+  const { highlight, clear } = useHoverInstrumentation();
+
+  const routeAnalysisKey = useMemo(() => analysisRouteKey(matches), [matches]);
+
+  useKeyboardShortcuts(isOpen, toggle, () => setIsOpen(false));
+
+  useEffect(() => {
+    injectStyles();
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || isCollapsed) return;
+    let cancelled = false;
+    const { cancel } = scheduleIdle(() => {
+      void (async () => {
+        try {
+          const mod = await ensureWasm();
+          if (cancelled) return;
+          const currentMatches = matchesRef.current;
+          const routeLines = currentMatches.map((m) => (m.pathname || "/").trim()).join("\n");
+          const [result, parsedEntries] = await Promise.all([
+            mod.analyzeRoutes(routeLines),
+            Promise.all(
+              currentMatches.map(async (match) => {
+                const parsed = await mod.parsePattern(getMatchPath(match));
+                return [match.id, parsed.dynamic_params] as const;
+              })
+            )
+          ]);
+          if (cancelled) return;
+          setScore(Math.max(0, Math.min(100, Number(result.score) || 0)));
+          setIssues(
+            result.score > 70 ? ["Complexity above recommended threshold"] : []
+          );
+          setParamNames(Object.fromEntries(parsedEntries));
+          setWasmError(null);
+        } catch (error: unknown) {
+          if (!cancelled) {
+            setParamNames({});
+            setScore(0);
+            setIssues([]);
+            setWasmError(
+              error instanceof Error ? error.message : "Route X-Ray WASM failed to load or run."
+            );
+          }
+        }
+      })();
+    });
+    return () => {
+      cancelled = true;
+      cancel();
+    };
+  }, [isCollapsed, isOpen, routeAnalysisKey]);
+
+  useEffect(() => {
+    if (!isOpen) setWasmError(null);
+  }, [isOpen]);
+
+  if (!isOpen && !showLauncherWhenClosed) {
+    return null;
+  }
+
+  if (!isOpen) {
+    const launcher = (
+      <button
+        type="button"
+        className="xray-launcher"
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(true);
+        }}
+        aria-label="Open Route X-Ray diagnostics"
+        aria-expanded={false}
+        aria-haspopup="true"
+        aria-controls="route-xray-panel"
+      >
+        🔬 X-Ray
+      </button>
+    );
+    return renderInBody(launcher);
+  }
+
+  const activeChain = matches.map((match) => getMatchPath(match)).join(" → ");
+  const activeParams = matches[matches.length - 1]?.params ?? {};
+
+  const panel = (
+    <aside
+      id="route-xray-panel"
+      className="xray-panel"
+      data-testid="xray-overlay"
+      role="region"
+      aria-labelledby={XRAY_PANEL_TITLE_ID}
+    >
+      <div className="xray-head">
+        <span id={XRAY_PANEL_TITLE_ID}>🔬 Route X-Ray</span>
+        <div className="xray-controls">
+          <button
+            type="button"
+            onClick={() => setIsCollapsed((current) => !current)}
+            aria-label={isCollapsed ? "Expand panel" : "Minimize panel"}
+          >
+            {isCollapsed ? "+" : "−"}
+          </button>
+          <button type="button" onClick={() => setIsOpen(false)} aria-label="Close panel">✕</button>
+        </div>
+      </div>
+
+      {wasmError ? (
+        <div className="xray-error" role="alert">
+          X-Ray error (app should stay usable): {wasmError}
+        </div>
+      ) : null}
+
+      {!isCollapsed ? (
+        <>
+          <section className="xray-section">
+            <div className="xray-title">ACTIVE CHAIN</div>
+            <div>{activeChain || "/"}</div>
+          </section>
+
+          <section className="xray-section">
+            <div className="xray-title">MATCHED ROUTES</div>
+            {matches.map((match) => {
+              const routeId = match.id || getMatchPath(match);
+              const path = getMatchPath(match);
+              const hasDynamic = Object.keys(match.params || {}).length > 0;
+              const paramsText = hasDynamic
+                ? ` ▸ ${Object.values(match.params || {}).join(", ")}`
+                : "";
+              const dynamicNames = (paramNames[match.id] ?? []).join(", ");
+              const routeData = (match.handle ?? {}) as {
+                xray?: { lazy?: boolean; errorBoundary?: boolean; component?: string };
+              };
+              const lazy = routeData.xray?.lazy ?? false;
+              const hasBoundary = routeData.xray?.errorBoundary ?? false;
+              const component = routeData.xray?.component ?? "Unknown";
+
+              return (
+                <div
+                  key={routeId}
+                  role="button"
+                  tabIndex={0}
+                  className="xray-route-row"
+                  aria-label={`Inspect route ${path}`}
+                  onMouseEnter={() => highlight(routeId, path)}
+                  onMouseLeave={() => clear(routeId)}
+                  onFocus={() => highlight(routeId, path)}
+                  onBlur={() => clear(routeId)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      highlight(routeId, path);
+                    }
+                  }}
+                >
+                  <span>● {path}{paramsText}{dynamicNames ? ` (${dynamicNames})` : ""}</span>
+                  <span>
+                    {component}
+                    {lazy ? <span className="xray-badge">L</span> : null}
+                    {hasBoundary ? <span className="xray-badge">✓</span> : null}
+                  </span>
+                </div>
+              );
+            })}
+          </section>
+
+          <section className="xray-section">
+            <div className="xray-title">PARAMS</div>
+            {Object.keys(activeParams).length === 0 ? (
+              <div>None</div>
+            ) : (
+              <div>
+                {Object.entries(activeParams).map(([key, value]) => (
+                  <Fragment key={key}>{key} = "{String(value)}" </Fragment>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="xray-section xray-status">
+            <span>LOADER STATUS</span>
+            <span>● idle</span>
+          </section>
+          <section className="xray-section xray-status">
+            <span>SCORE</span>
+            <span>{Math.round(score)}/100 {score > 60 ? "⚠" : "✓"}</span>
+          </section>
+          {issues.length > 0 ? (
+            <section className="xray-section">
+              {issues.map((issue) => <div key={issue}>⚠ {issue}</div>)}
+            </section>
+          ) : null}
+        </>
+      ) : null}
+    </aside>
+  );
+
+  return renderInBody(panel);
+}
+
+function RouteXrayDataOverlay(props: RouteXrayOverlayProps) {
+  const matches = useStableDataOverlayMatches();
+  return <OverlayInner {...props} matches={matches} />;
+}
+
+function RouteXrayLegacyOverlay(props: RouteXrayOverlayProps) {
+  const matches = useStableLegacyOverlayMatches();
+  return <OverlayInner {...props} matches={matches} />;
+}
+
+function RouteXrayOverlayDev(props: RouteXrayOverlayProps = {}) {
+  return (
+    <DataRouterErrorBoundary fallback={<RouteXrayLegacyOverlay {...props} />}>
+      <RouteXrayDataOverlay {...props} />
+    </DataRouterErrorBoundary>
+  );
+}
+
 export const RouteXrayOverlay =
   process.env.NODE_ENV === "production"
     ? () => null
-    : function RouteXrayOverlayImpl({
-      defaultOpen = false,
-      showLauncherWhenClosed = true
-    }: RouteXrayOverlayProps = {}) {
-      const matches = useOverlayMatches();
-      const { isOpen, setIsOpen, toggle } = useLocalOpenState(defaultOpen);
-      const [isCollapsed, setIsCollapsed] = useState(false);
-      const { score, issues } = useRouteXray(matches, isOpen && !isCollapsed);
-      const [paramNames, setParamNames] = useState<Record<string, string[]>>({});
-      const { highlight, clear } = useHoverInstrumentation();
-
-      useKeyboardShortcuts(toggle, () => setIsOpen(false));
-
-      useEffect(() => {
-        if (!isOpen || isCollapsed) return;
-        let cancelled = false;
-        (async () => {
-          try {
-            await ensureWasm();
-            const entries = await Promise.all(
-              matches.map(async (match) => {
-                const parsed = await wasm.parsePattern(getMatchPath(match));
-                return [match.id, parsed.dynamic_params] as const;
-              })
-            );
-            if (!cancelled) {
-              setParamNames(Object.fromEntries(entries));
-            }
-          } catch {
-            if (!cancelled) setParamNames({});
-          }
-        })();
-        return () => {
-          cancelled = true;
-        };
-      }, [isCollapsed, isOpen, matches]);
-
-      if (!isOpen && !showLauncherWhenClosed) {
-        return null;
-      }
-
-      if (!isOpen) {
-        return (
-          <div className="xray-root">
-            <button type="button" className="xray-launcher xray-hit" onClick={toggle} aria-label="Open Route X-Ray">
-              🔬 X-Ray
-            </button>
-          </div>
-        );
-      }
-
-      const activeChain = matches.map((match) => getMatchPath(match)).join(" → ");
-      const activeParams = matches[matches.length - 1]?.params ?? {};
-
-      return (
-        <div className="xray-root">
-          <aside className="xray-panel" data-testid="xray-overlay">
-            <div className="xray-head xray-hit">
-              <span>🔬 Route X-Ray</span>
-              <div className="xray-controls">
-                <button
-                  type="button"
-                  onClick={() => setIsCollapsed((current) => !current)}
-                  aria-label={isCollapsed ? "Expand panel" : "Minimize panel"}
-                >
-                  {isCollapsed ? "+" : "−"}
-                </button>
-                <button type="button" onClick={() => setIsOpen(false)} aria-label="Close panel">✕</button>
-              </div>
-            </div>
-
-            {!isCollapsed ? (
-              <>
-                <section className="xray-section">
-                  <div className="xray-title">ACTIVE CHAIN</div>
-                  <div>{activeChain || "/"}</div>
-                </section>
-
-                <section className="xray-section">
-                  <div className="xray-title">MATCHED ROUTES</div>
-                  {matches.map((match) => {
-                    const routeId = match.id || getMatchPath(match);
-                    const path = getMatchPath(match);
-                    const hasDynamic = Object.keys(match.params || {}).length > 0;
-                    const paramsText = hasDynamic
-                      ? ` ▸ ${Object.values(match.params || {}).join(", ")}`
-                      : "";
-                    const dynamicNames = (paramNames[match.id] ?? []).join(", ");
-                    const routeData = (match.handle ?? {}) as {
-                      xray?: { lazy?: boolean; errorBoundary?: boolean; component?: string };
-                    };
-                    const lazy = routeData.xray?.lazy ?? false;
-                    const hasBoundary = routeData.xray?.errorBoundary ?? false;
-                    const component = routeData.xray?.component ?? "Unknown";
-
-                    return (
-                      <div
-                        key={routeId}
-                        className="xray-route-row xray-hit"
-                        onMouseEnter={() => highlight(routeId, path)}
-                        onMouseLeave={() => clear(routeId)}
-                      >
-                        <span>● {path}{paramsText}{dynamicNames ? ` (${dynamicNames})` : ""}</span>
-                        <span>
-                          {component}
-                          {lazy ? <span className="xray-badge">L</span> : null}
-                          {hasBoundary ? <span className="xray-badge">✓</span> : null}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </section>
-
-                <section className="xray-section">
-                  <div className="xray-title">PARAMS</div>
-                  {Object.keys(activeParams).length === 0 ? (
-                    <div>None</div>
-                  ) : (
-                    <div>
-                      {Object.entries(activeParams).map(([key, value]) => (
-                        <Fragment key={key}>{key} = "{String(value)}" </Fragment>
-                      ))}
-                    </div>
-                  )}
-                </section>
-
-                <section className="xray-section xray-status">
-                  <span>LOADER STATUS</span>
-                  <span>● idle</span>
-                </section>
-                <section className="xray-section xray-status">
-                  <span>SCORE</span>
-                  <span>{Math.round(score)}/100 {score > 60 ? "⚠" : "✓"}</span>
-                </section>
-                {issues.length > 0 ? (
-                  <section className="xray-section">
-                    {issues.map((issue) => <div key={issue}>⚠ {issue}</div>)}
-                  </section>
-                ) : null}
-              </>
-            ) : null}
-          </aside>
-        </div>
-      );
-    };
+    : RouteXrayOverlayDev;

@@ -5,8 +5,10 @@ React overlay package for live route diagnostics and DOM highlighting.
 ## Install
 
 ```bash
-npm install -D react-router-xray-react
+npm install -D react-router-xray-react react-dom
 ```
+
+Requires **React 18+**, **React DOM 18+**, and **React Router DOM 6+** (same as typical Vite/React SPA setups).
 
 ## Usage
 
@@ -18,14 +20,14 @@ import { RouteXrayOverlay } from "react-router-xray-react";
 <RouteXrayOverlay />
 ```
 
-The overlay renders only in development (it returns `null` in production builds). It starts closed so WASM is not loaded until you open it. Toggle with `Alt+R` or `Ctrl+Shift+X`. Optional props:
+The UI mounts into `document.body` via a React portal so it stays above transformed/`overflow` layouts and the FAB stays clickable. Toggle with `Alt+R` or `Ctrl+Shift+X`. Optional props:
 
 ```tsx
 <RouteXrayOverlay defaultOpen />
 <RouteXrayOverlay showLauncherWhenClosed={false} />
 ```
 
-The UI sits in a full-viewport root with `pointer-events: none`; only the launcher, panel chrome, and route rows capture clicks so the underlying app stays usable.
+WASM loads only after you open the panel (dynamic import), so idle apps avoid that cost.
 
 To keep devtools out of the main chunk until needed, lazy-load the package:
 
